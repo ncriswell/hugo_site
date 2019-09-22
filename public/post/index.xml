@@ -12,12 +12,30 @@
     
     
     <item>
+      <title>TLST: TS 2017 Season Recap</title>
+      <link>/2019/09/22/tlst-ts-2017-season-recap/</link>
+      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/09/22/tlst-ts-2017-season-recap/</guid>
+      <description>IntroductionOverall Season PerformanceOverall Weekly PerformancePosition PerformancePlayer Performance// When the document is fully rendered...$(document).ready(function() {// ...select all header elements...$(&#39;h1, h2, h3, h4, h5&#39;).each(function() {// ...and add an id to them corresponding to their &#39;titles&#39;$(this).attr(&#39;id&#39;, $(this).html());});});IntroductionOverall Season Performance{&#34;</description>
+    </item>
+    
+    <item>
+      <title>TLST: TS 2018 Season Recap</title>
+      <link>/2019/09/22/tlst-ts-2018-season-recap/</link>
+      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/09/22/tlst-ts-2018-season-recap/</guid>
+      <description>IntroductionOverall Season PerformanceOverall Weekly PerformancePosition PerformancePlayer PerformanceConclusionAppendixWhat the Hell is an API?// When the document is fully rendered...$(document).ready(function() {// ...select all header elements...$(&#39;h1, h2, h3, h4, h5&#39;).each(function() {// ...and add an id to them corresponding to their &#39;titles&#39;$(this).attr(&#39;id&#39;, $(this).html());});});IntroductionSome might say that doing a data-driven retrospective on a previous season as the current season starts is a little useless.</description>
+    </item>
+    
+    <item>
       <title>TLSTTS - 2019 Season Week 1 Analysis</title>
       <link>/2019/09/22/a-new-post/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
       
       <guid>/2019/09/22/a-new-post/</guid>
-      <description>Week One AnalysisAnd we’re back with more nerd stuff. As long as Sleeper keeps easily delivering this data through their API, I can keep making these. My goal is to set things up so I can pretty much push a button and they will generate each week. But for that to happen, I’ll really have to have the content nailed down which won’t be possible until a few weeks have passed.</description>
+      <description>Week One AnalysisWinners and LosersMargin of VictoryPosition AnalysisPythagorean Win ExpectationWhat is This?Adapting for FootballWeek One AnalysisAnd we’re back with more nerd stuff. As long as Sleeper keeps easily delivering this data through their API, I can keep making these. My goal is to set things up so I can pretty much push a button and they will generate each week.</description>
     </item>
     
   </channel>

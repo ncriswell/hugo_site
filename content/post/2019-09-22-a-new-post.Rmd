@@ -2,11 +2,15 @@
 title: TLSTTS - 2019 Season Week 1 Analysis
 author: Nick Criswell
 date: '2019-09-22'
+output:
+  blogdown::html_page:
+    toc: true
 slug: a-new-post
 categories:
   - R
-tags:
-  - plot
+  - fantasy
+  - football
+  - non-technical
 ---
 
 ```{r setup, include=FALSE}
@@ -345,7 +349,7 @@ $$ \text{Winning Percentage} = \frac{\text{Runs Scored}^2}{\text{Runs Scored}^2 
 
 Let's compare this prediction for winning percentage to the simple run differential. We'll use data from the [Lahman](http://www.seanlahman.com/) database. He has all kinds of stuff going all the way back to the 1871 season, but we'll limit things from 1950 - 2018 to eliminate noise from The Drinkin' Beers and Rippin' Cigs while Playing Era. 
 
-```{r, fig.align='center', fig.height=10, fig.width=10}
+```{r, fig.align='center', fig.height=7, fig.width=7}
 library(Lahman)
 
 teams_df <- Teams %>% 
@@ -363,8 +367,8 @@ ggplot(data = teams_df, aes(x = pythag, y = wp)) +
                      label = percent) + 
   geom_smooth(method = "lm", formula = y~x) + 
   geom_abline(slope = 1, intercept = 0, colour = "#E41A1C") + 
-  ggtitle("Comparison of Pythagorean Estimate and Actual MLB Winning Percentage",
-          subtitle = "Red line indicates perfect fit. Actual fit is indicated in blue") + 
+  ggtitle("Comparison of Pythagorean Estimate and \nActual MLB Winning Percentage",
+          subtitle = "Red line indicates perfect fit. Actual fit is indicated in blue.") + 
   labs(caption = "Lahman Data: 1950-2018") + 
   theme_fivethirtyeight() + 
   theme(axis.title = element_text())
@@ -462,7 +466,7 @@ ggplot(data = pythag_melt, aes(x = Owner, y = value, fill = key)) +
 
 ```
 
-Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie's actual winning percentages exceed what we'd expect based on the points he scores and the points scored against him in both seasons. Zach and Joe are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is *three games* worth of difference. Charlie, feel free to drop that trophy off next time you're driving by Pocahontas. 
+Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie's actual winning percentages exceed what we'd expect based on the points he scores and the points scored against him in both seasons. Zach and Jon are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is *three games* worth of difference. Charlie, feel free to drop that trophy off next time you're driving by Pocahontas. 
 
 One that that we *can do* is determine a better fit for that exponent. You'll have to take my word for it, but we can rearrange the formula for the Pythagorean percentage to be linear in the exponent. After some algebra magic, we end up with:
 

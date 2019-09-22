@@ -91,7 +91,7 @@ code {
 }
 
 .content {
-  max-width: 700px;
+  max-width: 1000px;
   margin: 40px auto 10px;
   padding: 0 15px;
   font-size: 16px;
@@ -293,7 +293,8 @@ code {
 
   .archive-item-link {
     text-overflow: ellipsis;
-    max-width: calc(100% - 120px);
+    /* max-width: calc(100% - 120px); */
+	max-width: 1200px;
     white-space: nowrap;
     overflow: hidden;
   }

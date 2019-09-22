@@ -106,7 +106,7 @@ datatable(owner_wl1,
 ```
 
 
-```{r, fig.align='center', fig.width = 10, fig.height=10}
+```{r, fig.align='center', fig.width = 8, fig.height=8}
 
 # get number of wins by owner
 owner_wl0 <- weekly_owner_scores1 %>% 
@@ -164,7 +164,7 @@ datatable(weekly_owner_scores1,
 
 
 
-```{r, fig.align='center', fig.width= 12, fig.height=12}
+```{r, fig.align='center', fig.width= 10, fig.height=8}
 
 # melth the data down so we can get points for/against as a column
 weekly_owner_scores_melt0 <- weekly_owner_scores1 %>% 
@@ -189,14 +189,15 @@ ggplot(data = weekly_owner_scores_melt0, aes(x = Week, y = value, color = Points
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   theme_fivethirtyeight() + 
   theme(axis.title = element_text(),
-        legend.title = element_blank()) 
+        legend.title = element_blank(),
+        axis.text.x = element_text(size = 7)) 
   
   
 
 ```
 
 
-```{r, fig.align='center', fig.width= 12, fig.height=12}
+```{r, fig.align='center', fig.width= 10, fig.height=8}
 
 ggplot(data = weekly_owner_scores_melt0, aes(x = Owner, y = value, fill = Points)) +
   geom_boxplot() + 
@@ -216,7 +217,7 @@ ggplot(data = weekly_owner_scores_melt0, aes(x = Owner, y = value, fill = Points
 ## Position Performance
 
 
-```{r, fig.width = 8, fig.height = 8}
+```{r, fig.width = 7, fig.height = 7, fig.align='center'}
 owner_position_view0 <- mu_unnest_view2 %>% 
   filter(!is.na(position)) %>% 
   group_by(display_name, position, week) %>% 
@@ -240,7 +241,7 @@ ggplot(data = owner_position_view0,
   scale_colour_brewer(name = "Position", palette = "Set1") + 
   scale_y_continuous(name = "Average Weekly Position Contribution") + 
   scale_x_discrete(name = "") + 
-  ggtitle("Average Weekly Contribution by Position and Owner", 
+  ggtitle("Contribution by Position and Owner", 
           subtitle = "Vertical lines represent league weekly average") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   theme_fivethirtyeight() + 
@@ -252,7 +253,7 @@ ggplot(data = owner_position_view0,
 
 
 
-```{r, fig.height = 13, fig.width = 13}
+```{r, fig.width = 10, fig.height = 8, fig.align='center'}
 week_position_view0 <- mu_unnest_view2 %>% 
   group_by(display_name, position, week) %>% 
   summarise(position_score = sum(player_score)) %>% 
@@ -264,7 +265,7 @@ ggplot(data = week_position_view0,
            fill = position, 
            label = position_score)) + 
   geom_col(colour = "black") + 
-  facet_wrap(~display_name) +
+  facet_wrap(~display_name, scales = "free_x") +
   scale_x_continuous(breaks = 1:16, name = "Week") +
   scale_y_continuous(name = "Total Score") + 
   scale_fill_brewer(name = "Position", palette = "Set1") + 

@@ -139,6 +139,19 @@ code {
   background: #CBF8DF;
 }
 
+.table {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+
+.img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
 .article-content hr {
   width: 150px;
   margin: 50px auto;

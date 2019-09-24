@@ -30,7 +30,7 @@ code {
 }
 
 .wrapper {
-  overflow: scroll;
+  overflow: auto;
   position: relative;
 }
 
@@ -156,7 +156,7 @@ code {
   width: 150px;
   margin: 50px auto;
   height: 1px;
-  overflow: scroll;
+  overflow: hidden;
   border: none;
   background: #e5e5e5;
 }
@@ -309,7 +309,7 @@ code {
     /* max-width: calc(100% - 120px); */
 	max-width: 1200px;
     white-space: nowrap;
-    overflow: scroll;
+    overflow: hidden;
   }
 
   .article-title {

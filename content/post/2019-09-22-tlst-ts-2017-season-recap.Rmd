@@ -1,5 +1,5 @@
 ---
-title: 'TLST: TS 2017 Season Recap'
+title: 'TLSTTS  - 2017 Season Recap'
 author: Nick Criswell
 date: '2019-09-22'
 slug: tlst-ts-2017-season-recap

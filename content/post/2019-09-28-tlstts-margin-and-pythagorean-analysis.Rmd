@@ -404,7 +404,7 @@ Please note, we are forcing that line through 0 as the intercept. Oh also, we ca
 
 
 ```{r}
-pander::pander(summary(lm1))
+pander::pander(summary(lm1)) 
 
 ```
 

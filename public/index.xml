@@ -6,10 +6,28 @@
     <description>Recent content on Nick Criswell</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 28 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>TLSTTS - 2019 Season Analysis</title>
+      <link>/2019/09/28/tlst-ts-2019-season-analysis/</link>
+      <pubDate>Sat, 28 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/09/28/tlst-ts-2019-season-analysis/</guid>
+      <description>OverviewWinners and LosersRound Robin AnalysisPosition PerformanceConclusionOverviewThis site will serve as a repository for analysis of the 2019 The League Season Thunderdome: The Sequel NFL Fantasy season. Our league is hosted on the fantastic Sleeper platform and data are is are (ok, fine) is pulled using the Sleeper API.</description>
+    </item>
+    
+    <item>
+      <title>TLSTTS - Margin and Pythagorean Analysis</title>
+      <link>/2019/09/28/tlstts-margin-and-pythagorean-analysis/</link>
+      <pubDate>Sat, 28 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/09/28/tlstts-margin-and-pythagorean-analysis/</guid>
+      <description>OverviewMargin of Victory AnalysisPythagorean Win ExpectationWhat is This?Adapting for FootballOverviewThis post will cover material analyzed in a prior weekly update. In the first week of the 2019 NFL Season, some of the results I came across motivated me to look into historical margin of victory. Once I had all that data loaded to my workspace, I also thought it would be fun(?</description>
+    </item>
     
     <item>
       <title>TLST: TS 2017 Season Recap</title>
@@ -27,15 +45,6 @@
       
       <guid>/2019/09/22/tlst-ts-2018-season-recap/</guid>
       <description>IntroductionOverall Season PerformanceOverall Weekly PerformancePosition PerformancePlayer PerformanceConclusionAppendixWhat the Hell is an API?// When the document is fully rendered...$(document).ready(function() {// ...select all header elements...$(&#39;h1, h2, h3, h4, h5&#39;).each(function() {// ...and add an id to them corresponding to their &#39;titles&#39;$(this).attr(&#39;id&#39;, $(this).html());});});IntroductionSome might say that doing a data-driven retrospective on a previous season as the current season starts is a little useless.</description>
-    </item>
-    
-    <item>
-      <title>TLSTTS - 2019 Season Week 1 Analysis</title>
-      <link>/2019/09/22/a-new-post/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/2019/09/22/a-new-post/</guid>
-      <description>Week One AnalysisWinners and LosersMargin of VictoryPosition AnalysisPythagorean Win ExpectationWhat is This?Adapting for FootballWeek One AnalysisAnd we’re back with more nerd stuff. As long as Sleeper keeps easily delivering this data through their API, I can keep making these. My goal is to set things up so I can pretty much push a button and they will generate each week.</description>
     </item>
     
     <item>

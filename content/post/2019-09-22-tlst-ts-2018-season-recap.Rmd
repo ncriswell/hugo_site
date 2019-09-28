@@ -290,7 +290,7 @@ I mean, FFS, did I even start a tight end? I'm getting beat by `BluesBod` on tha
 
 Although it is kind of hard to read due to our giant league size, we can also look at position performance by week. 
 
-```{r, fig.height = 6, fig.width = 6, fig.align='center'}
+```{r, fig.height = 10, fig.width = 10, fig.align='center'}
 week_position_view0 <- mu_unnest_view2 %>% 
   group_by(display_name, position, week) %>% 
   summarise(position_score = sum(player_score)) %>% 

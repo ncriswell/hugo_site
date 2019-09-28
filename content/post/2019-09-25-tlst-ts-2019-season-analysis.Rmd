@@ -1,0 +1,364 @@
+---
+title: 'TLSTTS - 2019 Season Analysis'
+author: Nick Criswell
+date: '2019-09-28'
+slug: tlst-ts-2019-season-analysis
+output:
+  blogdown::html_page:
+    toc: true
+categories:
+  - fantasy
+  - football
+  - non-technical
+  - R
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      fig.height = 5, 
+                      fig.width = 7, 
+                      fig.align= 'center')
+
+library(jsonlite)       # Pulling down JSON data
+library(tidyverse)      # Tools for data analysis
+library(glue)           # Sticking strings together
+library(RColorBrewer)   # Color Pals
+library(plotly)         # Interactive graphics
+library(DT)             # JS datatables package
+library(ggthemes)       # For 538 theme
+library(scales)         # Labels for ggplot scales
+library(widgetframe)    # putting DTs in sites
+```
+
+```{r get_data, cache=TRUE}
+source("C:/sleeper_fantasy/R/global.R")
+ 
+# Get league info for 2019 season
+s19_info <- F_get_lg_info(user_id = user_id, season = 2019)
+
+# unload some information from this
+lg_id <- s19_info$lg_id
+lg_owners <- s19_info$user_vw0
+lg_rules <- s19_info$lg_rules
+
+#### Combining Data ####========================================================
+
+# pull matchup and stat information
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:3)
+mu_view0 <- mu_out$mu_view0
+
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:3)
+stat_sum0 <- stat_out$player_stats_sum0
+stat_melt0 <- stat_out$stats_melt1
+
+# combine the matchup and stat data
+mu_view1 <- mu_view0 %>% 
+  left_join(stat_sum0, 
+            by = c("player_id" = "player_id", 
+                   "week" = "week"))
+
+# add in the owner name
+mu_view2 <- mu_view1 %>% 
+  left_join(lg_owners, 
+            by = c("roster_id" = "roster_id"))
+
+# add in player information
+mu_view3 <- mu_view2 %>% 
+  left_join(player_view0, 
+            by = c("player_id" = "player_id"))
+
+```
+
+
+## Overview
+
+This site will serve as a repository for analysis of the 2019 The League Season Thunderdome: The Sequel NFL Fantasy season. Our league is hosted on the fantastic [Sleeper](https://sleeper.app/) platform and data ~~are~~ ~~is~~ ~~are~~ (ok, fine) is pulled using the [Sleeper API](https://docs.sleeper.app/). The analysis is completed using the [`R`](https://cran.r-project.org/) programming environment and pushed out as a website via the [`blogdown` package](https://bookdown.org/yihui/blogdown/), utilizing the [Hugo](https://gohugo.io) static web framework. [Netlify](https://www.netlify.com/) is the hosting platform, and all code can be found on my [GitHub page](https://github.com/ncriswell). 
+
+I'll try to make weekly updates to the site as the season goes along and will also be doing write-ups here and there that contain analyses that span multiple seasons, go back to a particular season, or are just something which might be interesting to look at. Go back to the [home page](https://agitated-jackson-c07a26.netlify.com/) to and look for "TLSTTS" in the post title for those ones. These posts will obviously focus on analyzing the league results through data; if you want analysis that focuses on analyzing the league through the lens of some kind of constantly shifting mythology involving a pantheon of several gods aped from various world traditions, see the weekly newsletter that Joe sends out. 
+
+## Winners and Losers
+
+To orient ourselves, we'll start with a simple view of the win-loss record for all owners in the league. 
+
+```{r, fig.align='center', fig.height=5, fig.width=7}
+weekly_owner_scores0 <- mu_view3 %>% 
+  group_by(week, display_name, starter, matchup_id) %>% 
+  summarise(tot_points = sum(player_score, na.rm = TRUE)) %>% 
+  ungroup()
+
+# join this back onto 
+weekly_owner_scores1 <- weekly_owner_scores0 %>% 
+  left_join(weekly_owner_scores0, by = c("week", "matchup_id", "starter")) %>% 
+  filter(display_name.x != display_name.y) %>% 
+  mutate(Week = as.factor(week),
+         display_name.x = as.factor(display_name.x)) %>% 
+  select(Week, display_name.x, tot_points.x, tot_points.y, starter, matchup_id) %>% 
+  rename(`Owner` = display_name.x, 
+         `Points For` = tot_points.x, 
+         `Points Against` = tot_points.y) %>% 
+  arrange(Week) %>% 
+  mutate(Outcome = case_when(`Points For` > `Points Against` ~ "Win", 
+                             TRUE ~ "Loss")) %>% 
+  group_by(Week, starter) %>% 
+  mutate(`Week Median` = median(`Points For`), 
+         `Week Mean` = mean(`Points For`)) %>% 
+  ungroup()
+
+# Get the number of wins and losses by owner
+owner_wl0 <- weekly_owner_scores1 %>% 
+  filter(starter == TRUE) %>% 
+  group_by(Owner, Outcome) %>% 
+  summarise(records = n()) %>% ungroup()
+
+# Now flip this into a table that people can download
+owner_wl_melt0 <- owner_wl0 %>% 
+  spread("Outcome", "records", fill = 0) %>% 
+  mutate(`Winning %` = round(Win / (Win + Loss), 4)) 
+
+# Add to this the points for and against
+owner_points_fa0 <- weekly_owner_scores1 %>% 
+  filter(starter == TRUE) %>% 
+  group_by(Owner) %>% 
+  summarise(`Points For` = round(sum(`Points For`), 2), 
+            `Points Against` = round(sum(`Points Against`), 2))
+
+owner_wl_melt1 <- owner_wl_melt0 %>% 
+  left_join(owner_points_fa0) %>% 
+  arrange(desc(`Winning %`), desc(`Points For`))
+
+
+```
+
+```{r}
+# make the datatable
+
+datatable(owner_wl_melt1,
+          class = 'cell-border stripe',
+          rownames = FALSE, 
+          caption = "TLST: TS 2019 NFL Season: Current Standings",
+          filter = 'top',
+          extensions = 'Buttons', 
+          options = list(dom = 'lBfrtip', 
+                         buttons = list('excel', "csv"),
+                         pageLength = 14, autoWidth = TRUE)) %>% 
+  formatPercentage("Winning %", 1)
+
+
+
+```
+
+
+```{r,  fig.align='center', fig.height=5, fig.width=7}
+
+# graph it
+ggplot(data = owner_wl0, aes(x = Owner, y = records, fill = Outcome)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  scale_fill_brewer(palette = "Set1") + 
+  coord_flip() + 
+  ggtitle("TLST: TS - 2019 Win-Loss Record") + 
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  theme_nc + 
+  theme(axis.title.x = element_blank())
+
+```
+
+I'm doing pretty well for someone who took someone he thought was named "Jake" Mahomes in round 1.  We'll see how long this lasts. 
+
+We can also make a quick view of how things look week by week. 
+
+
+```{r}
+mu_dt <- mu_view3 %>% 
+  mutate(Week = as.factor(as.numeric(week)),
+         Score = round(player_score, 2)) %>% 
+  select(Week, display_name, matchup_id, position, last_name, 
+         first_name, Score, starter) %>% 
+  mutate_at(c("display_name", "matchup_id", "position", "last_name", "first_name"), as.factor) %>% 
+  rename(Owner = display_name, 
+         Matchup = matchup_id,
+         Last = last_name, 
+         First = first_name, 
+         Position = position,
+         Starter = starter) 
+
+datatable(mu_dt,
+          class = 'cell-border stripe',
+          rownames = FALSE, 
+          caption = "TLST: TS 2019 NFL Season: Weekly Stats",
+          filter = 'top',
+          extensions = 'Buttons', 
+          options = list(dom = 'lBfrtip', 
+                         buttons = list('excel', "csv"),
+                         pageLength = 10, autoWidth = TRUE))
+
+
+```
+
+```{r, fig.align='center', fig.height=5, fig.width=7}
+ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
+       aes(x = matchup_id, y = `Points For`, fill = Outcome, label = Owner)) + 
+  geom_bar( position = "dodge", stat = "identity") + 
+  geom_text(position = position_dodge(width = 1),
+             angle = 0, size = 2) + 
+  geom_hline(aes(yintercept = `Week Median`)) + 
+  geom_hline(aes(yintercept = `Week Mean`), linetype = "dotted") +
+  facet_wrap(~Week) +
+  scale_fill_brewer(palette = "Set1") + 
+  coord_flip() + 
+  ggtitle("TLST: TS - 2019 Season Weekly Results",
+          subtitle = "Teams are grouped by matchup\nSolid line is week median. Dotted line is week average.") + 
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  theme_nc + 
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank())
+  
+```
+
+## Round Robin Analysis 
+
+The prior graph shows weekly performance against the median and average. This brings up a question about how each owner performs against all other owners each week-not just how they do against the person they are playing. We can create a graph that will show for each week how many teams each owner *would have beat* if we had to play every other owner every week. This view is a handy way to find owners who are consistently benefiting/suffering from favorable/unfavorable matchups. Each "row" is a week. Colors are added to show the win/loss outcome, and the number of round robin wins is indicated with black text. 
+
+```{r}
+# get the times that each week a player would win against all other playes
+rr_view0 <- weekly_owner_scores1 %>% 
+  filter(starter == TRUE) %>% 
+  mutate(Result = case_when(`Points For` > `Points Against` ~ "W", 
+                            TRUE ~ "L")) %>% 
+  group_by(Week) %>% 
+  mutate(num_over = rank(`Points For`)) %>% 
+  ungroup() %>% 
+  mutate(`RR Wins` = num_over - 1) %>%
+  group_by(Owner) %>% 
+  mutate(`Total RR Wins` = sum(`RR Wins`)) %>% 
+  ungroup()
+
+ggplot(data = rr_view0, 
+       aes(x = fct_reorder(Owner, `Total RR Wins`), 
+           y = `Week`, 
+           fill = `Result`, 
+           label = `RR Wins`)) + 
+  geom_tile(colour = "black") + 
+  geom_text() +
+  scale_fill_brewer(palette = "Set1") +
+  ggtitle("TLST: TS - 2019 Round Robin Analysis",
+          subtitle = "Graph is arranged so total round robin wins increases left to right") +
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  theme_nc + 
+  theme(axis.title.x = element_blank())
+
+```
+
+This graph does a really good job of showing people who are benefiting from favorable matchupes (Max) and people who might have gotten robbed here and there (Zach, James). Joe, not sure if you want to use this for your weekly rankings, but if you do, you might find yourself slipping a bit...
+
+## Position Performance
+
+Let's see how each position contributes to points for each owner. A downloadable table for all players, for all weeks is below as are some summary graphs. 
+
+```{r}
+mu_dt <- mu_view3 %>% 
+  mutate(Week = as.factor(as.numeric(week)),
+         Score = round(player_score, 2)) %>% 
+  select(Week, display_name, matchup_id, position, last_name, 
+         first_name, Score, starter) %>% 
+  mutate_at(c("display_name", "matchup_id", "position", "last_name", "first_name"), as.factor) %>% 
+  rename(Owner = display_name, 
+         Matchup = matchup_id,
+         Last = last_name, 
+         First = first_name, 
+         Position = position,
+         Starter = starter) 
+
+datatable(mu_dt,
+          class = 'cell-border stripe',
+          rownames = FALSE, 
+          caption = "TLST: TS 2019 NFL Season: Weekly Stats",
+          filter = 'top',
+          extensions = 'Buttons', 
+          options = list(dom = 'lBfrtip', 
+                         buttons = list('excel', "csv"),
+                         pageLength = 10, autoWidth = TRUE))
+
+
+```
+
+
+
+```{r}
+
+weekly_owner_scores_sum0 <- weekly_owner_scores1 %>% 
+  filter(starter == TRUE) %>% 
+  group_by(Week) %>% 
+  mutate(Owner_Rank = rank(`Points For`)) %>% 
+  select(Owner, Owner_Rank)
+
+weekly_owner_position0 <- mu_view3 %>% 
+  group_by(week, display_name, starter, matchup_id, position) %>% 
+  summarise(position_points = sum(player_score, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  mutate(Week = as.factor(week), 
+         display_name = as.factor(display_name)) %>% 
+  rename(Owner = display_name,
+         `Points For` = position_points) %>% 
+  ungroup() %>% 
+  left_join(weekly_owner_scores_sum0)
+  
+ggplot(data = weekly_owner_position0 %>% filter(starter == TRUE),
+       aes(x = Owner,  y = `Points For`, 
+           fill = position, label = round(`Points For`, 0))) + 
+  geom_bar(stat = "identity", colour = "black") + 
+  geom_text(position = position_stack(vjust = 0.5), size = 2) + 
+  scale_fill_brewer(palette = "Set1", name = "Position") +
+  facet_wrap(~Week) + 
+  ggtitle("TLST: TS - 2019 Season Weekly Position Scores by Owner")  +
+    labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  coord_flip() + 
+   theme_nc + 
+  theme(axis.title = element_blank())
+
+```
+
+If you like this view, I would say don't get used to it. This isn't going to be readable by the end of the season. The excess of purple and yellow in the plot above tells us pretty clearly that running back and wide receivers run the show in fantasy football. Unless you have the best QB in the league...
+
+Another useful view will let us see the relative strength of our positions against the rest of the league in a simpler view. We can plot the average position score by owner for all positions and add indicators for league average. 
+
+```{r}
+owner_position_view0 <- mu_view3 %>% 
+  filter(!is.na(position), starter == TRUE) %>% 
+  group_by(display_name, position, week) %>% 
+  summarise(tot_contribution = sum(player_score, na.rm = TRUE)) %>% 
+  group_by(display_name, position) %>% 
+  summarise(avg_contribution = mean(tot_contribution, na.rm = TRUE)) %>% 
+  ungroup()
+
+# overall averages
+lg_position_view0 <- owner_position_view0 %>% 
+  group_by(position) %>% 
+  summarise(avg_contribution = mean(avg_contribution, na.rm = TRUE)) %>% 
+  ungroup()
+
+ggplot(data = owner_position_view0, 
+       aes(x = display_name, y = avg_contribution)) +
+  geom_hline(data = lg_position_view0, 
+             aes(yintercept = avg_contribution, colour = position),
+             show.legend = FALSE, size = 1.25) +
+  geom_point(aes(colour = position), size = 5, alpha = 0.8) + 
+  scale_colour_brewer(name = "Position", palette = "Set1") + 
+  scale_y_continuous(name = "Average Weekly Position Contribution") + 
+  scale_x_discrete(name = "") + 
+  ggtitle("Average Weekly Contribution by Position and Owner", 
+          subtitle = "Vertical lines represent league weekly average") + 
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  coord_flip() + 
+   theme_nc + 
+  theme(axis.title = element_blank())
+
+```
+
+Dave's defense is outperforming most people's QB. New England has had a couple of really good weeks. James probably knows this, but he might want to look into finding a new QB. Nate probably doesn't know this, but he might want to look into finding a new QB. Me on the other hand, my QB scores more then most people's WR and RB cores. I have turned down a couple of trades from Jon that involved running backs. I have some second thoughts on that, but the guys he was offering me both had fallen off by the time he offered them up. I think. 
+
+## Conclusion
+
+That is all. A lot of the work I've been doing on this lately hasn't been around analysis or data work at all. Rather, I've had to learn how to make a web site (kind of) work. As the weeks go on, and I get better at that kind of thing, I'll also be able to to dedicate more time to the analysis stuff. All that said, I think this whole season is going to be a work in progress. If Sleeper keeps up this free and easy to use API, I have high hopes for next season. 

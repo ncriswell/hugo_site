@@ -1,0 +1,139 @@
+---
+title: TLSTTS - Margin and Pythagorean Analysis
+author: Nick Criswell
+date: '2019-09-28'
+slug: tlstts-margin-and-pythagorean-analysis
+output:
+  blogdown::html_page:
+    toc: true
+categories:
+  - fantasy
+  - football
+  - non-technical
+  - R
+tags: []
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/datatables-binding/datatables.js"></script>
+<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/dt-core/js/jquery.dataTables.min.js"></script>
+<script src="/rmarkdown-libs/jszip/jszip.min.js"></script>
+<link href="/rmarkdown-libs/dt-ext-buttons/css/buttons.dataTables.min.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/dt-ext-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/rmarkdown-libs/dt-ext-buttons/js/buttons.flash.min.js"></script>
+<script src="/rmarkdown-libs/dt-ext-buttons/js/buttons.html5.min.js"></script>
+<script src="/rmarkdown-libs/dt-ext-buttons/js/buttons.colVis.min.js"></script>
+<script src="/rmarkdown-libs/dt-ext-buttons/js/buttons.print.min.js"></script>
+<link href="/rmarkdown-libs/nouislider/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/nouislider/jquery.nouislider.min.js"></script>
+<link href="/rmarkdown-libs/selectize/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/selectize/selectize.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#margin-of-victory-analysis">Margin of Victory Analysis</a></li>
+<li><a href="#pythagorean-win-expectation">Pythagorean Win Expectation</a><ul>
+<li><a href="#what-is-this">What is This?</a></li>
+<li><a href="#adapting-for-football">Adapting for Football</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>This post will cover material analyzed in a prior weekly update. In the first week of the 2019 NFL Season, some of the results I came across motivated me to look into historical margin of victory. Once I had all that data loaded to my workspace, I also thought it would be fun(?) to check out Pythagorean Win Expecation. Since the 2019 season analyses are not going to be separate, weekly posts but rather a running post that changes every week, I am migrating those two side projects to this page.</p>
+</div>
+<div id="margin-of-victory-analysis" class="section level2">
+<h2>Margin of Victory Analysis</h2>
+<p>Like I said, this came about because I noticed that the margin of victory for most matchups in the first week of the 2019 season were very high.</p>
+<p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>From this we see that margin of victory continues to be pretty high with a couple of real nail-biters spinkled in here and there. A view of this for all seasons (Season 2019 through three week) can be seen below.</p>
+<p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We clearly see that the large margins of victory are common and have always been.</p>
+</div>
+<div id="pythagorean-win-expectation" class="section level2">
+<h2>Pythagorean Win Expectation</h2>
+<p>Like I said, I have all the data in my <code>R</code> workspace to do Pythagorean analysis so we might as well do it. This part is unlikely to help anyone actually get better at fantasy.</p>
+<div id="what-is-this" class="section level3">
+<h3>What is This?</h3>
+<p>The <a href="https://www.baseball-reference.com/bullpen/Pythagorean_Theorem_of_Baseball">Pythagorean Win Expectation</a> was developed by Bill James for baseball and attempts to explain the relationship between runs and wins. The idea is that you can look at runs scored and runs allowed in a season and predict that team’s winning percentage. Run differential is a simpler, related metrics but the Pythag approach does a better job. The initial formula for baseball is:</p>
+<p><span class="math display">\[ \text{Winning Percentage} = \frac{\text{Runs Scored}^2}{\text{Runs Scored}^2 + \text{Runs Allowed}^2} \]</span></p>
+<p>Let’s compare this prediction for winning percentage to the simple run differential. We’ll use data from the <a href="http://www.seanlahman.com/">Lahman</a> database. He has all kinds of stuff going all the way back to the 1871 season, but we’ll limit things from 1950 - 2018 to eliminate noise from The Drinkin’ Beers and Rippin’ Cigs while Playing Era.</p>
+<p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ok, well there you have it. It does a pretty good job. Nerds like to play with things and often find that an exponent of around 1.8 does a better job. Finding new exponents based on actual performance is important and do-able. Keep that in mind…</p>
+</div>
+<div id="adapting-for-football" class="section level3">
+<h3>Adapting for Football</h3>
+<p>It is possible to adapt this approach to NFL games. We can use points scored and points allowed. However, the <a href="https://en.wikipedia.org/wiki/Pythagorean_expectation">exponent for football is 2.37.</a> Lets see how this works for our league.</p>
+<div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"top","filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;Best_Bod&quot;,&quot;CharBod&quot;,&quot;Charo&quot;,&quot;dlasher&quot;,&quot;jbodlovich&quot;,&quot;jgray2005&quot;,&quot;JoeBod&quot;,&quot;JonBod&quot;,&quot;Maxmaywin&quot;,&quot;ncriswell&quot;,&quot;NorwegianBlues&quot;,&quot;Otto9&quot;,&quot;PottsC&quot;,&quot;Riggatony&quot;,&quot;scottyvv&quot;,&quot;sgogel1&quot;,&quot;zach34&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;2017&quot;,&quot;2018&quot;,&quot;2019&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"230.8\" data-max=\"2102.5\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"265.39\" data-max=\"1917.6\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"0\" data-max=\"12\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"0\" data-max=\"14\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"0\" data-max=\"1\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"0.2\" data-max=\"0.75\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none; position: absolute; width: 200px;\">\n      <div data-min=\"-0.34\" data-max=\"0.41\" data-scale=\"15\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","extensions":["Buttons"],"caption":"<caption>TLST: TS Actual Winning % v. Pythagorean Expectation<\/caption>","data":[["Best_Bod","CharBod","dlasher","jbodlovich","jgray2005","JoeBod","Maxmaywin","ncriswell","NorwegianBlues","Otto9","Riggatony","scottyvv","sgogel1","zach34","Charo","dlasher","jbodlovich","jgray2005","JoeBod","JonBod","Maxmaywin","ncriswell","NorwegianBlues","scottyvv","sgogel1","zach34","Best_Bod","dlasher","jbodlovich","jgray2005","JoeBod","Maxmaywin","ncriswell","NorwegianBlues","Otto9","PottsC","Riggatony","scottyvv","sgogel1","zach34"],["2018","2018","2018","2018","2018","2018","2018","2018","2018","2018","2018","2018","2018","2018","2017","2017","2017","2017","2017","2017","2017","2017","2017","2017","2017","2017","2019","2019","2019","2019","2019","2019","2019","2019","2019","2019","2019","2019","2019","2019"],[1708.8,2102.5,1667.6,1731.05,1801.75,1599.45,1607.45,1415.4,1525.25,2008.3,1857.25,1731.35,1724.6,1920.6,1587.4,1376.65,1680.15,1428.7,1778,1778.25,1620.45,1604.35,1666.55,1570.2,1360.15,1569.05,381.5,375,332.15,360.8,311.85,311.9,425.55,230.8,271.15,292.3,344.9,369.3,324.95,381],[1596.9,1799.8,1748.95,1686.15,1651.5,1614.75,1744.1,1720.2,1612,1906.9,1917.6,1725.45,1899.55,1777.5,1584.65,1568.8,1597.7,1511.45,1610.1,1447.95,1586.75,1606.6,1584.1,1667.4,1640.3,1614.1,291.45,283.2,311.75,345.25,350.2,265.4,267.2,409.35,369.95,397.75,385.35,364.9,356.85,314.55],[8,12,7,9,10,7,8,3,6,10,7,9,6,8,9,6,8,5,10,12,7,8,8,7,1,11,3,2,1,1,1,3,3,0,0,0,1,2,2,2],[7,4,9,7,6,8,8,12,9,6,9,7,10,8,6,9,7,10,6,3,8,8,7,9,14,5,0,1,2,2,2,0,0,3,3,3,2,1,1,1],[0.53,0.75,0.44,0.56,0.62,0.47,0.5,0.2,0.4,0.62,0.44,0.56,0.38,0.5,0.6,0.4,0.53,0.33,0.62,0.8,0.47,0.5,0.53,0.44,0.07,0.69,1,0.67,0.33,0.33,0.33,1,1,0,0,0,0.33,0.67,0.67,0.67],[0.54,0.59,0.47,0.52,0.55,0.49,0.45,0.39,0.47,0.53,0.48,0.5,0.44,0.55,0.5,0.44,0.53,0.47,0.55,0.6,0.51,0.5,0.53,0.47,0.41,0.49,0.65,0.66,0.54,0.53,0.43,0.59,0.75,0.2,0.32,0.33,0.43,0.51,0.44,0.61],[-0.01,0.16,-0.03,0.04,0.07,-0.02,0.05,-0.19,-0.07,0.09,-0.04,0.0600000000000001,-0.06,-0.05,0.1,-0.04,0,-0.14,0.07,0.2,-0.04,0,0,-0.03,-0.34,0.2,0.35,0.01,-0.21,-0.2,-0.1,0.41,0.25,-0.2,-0.32,-0.33,-0.1,0.16,0.23,0.0600000000000001]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th>Owner<\/th>\n      <th>Season<\/th>\n      <th>Points For<\/th>\n      <th>Points Against<\/th>\n      <th>Wins<\/th>\n      <th>Losses<\/th>\n      <th>Win %<\/th>\n      <th>Pythag Est<\/th>\n      <th>Difference<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"lBfrtip","buttons":["excel","csv"],"pageLength":10,"autoWidth":true,"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8]}],"order":[],"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+<p>There you have it as a table. Let’s add a little color…</p>
+<p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie’s actual winning percentages exceed what we’d expect based on the points he scores and the points scored against him in both seasons. Zach and Joe are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is <em>three games</em> worth of difference. Charlie, feel free to drop that trophy off next time you’re driving by Pocahontas.</p>
+<p>One that that we <em>can do</em> is determine a better fit for that exponent. You’ll have to take my word for it, but we can rearrange the formula for the Pythagorean percentage to be linear in the exponent. After some algebra magic, we end up with:</p>
+<p><span class="math display">\[\ln\frac{W}{L} = n \times \ln\frac{\text{Points For}}{\text{Points Against}}  \]</span></p>
+<p><span class="math inline">\(n\)</span> is the empirically determined exponent. We can make a plot with <span class="math inline">\(\ln\frac{W}{L}\)</span> on the <span class="math inline">\(y\)</span> and $ $ on the <span class="math inline">\(x\)</span>, draw a line through it and that slope is our actual exponent.</p>
+<p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Please note, we are forcing that line through 0 as the intercept. Oh also, we can’t have 0s since we taking logs here so we’re dropping 2019. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I’m just going to bring the regression summary which gives us the slope of the line as the coefficient on <code>lgwl</code>.</p>
+<table style="width:81%;">
+<colgroup>
+<col width="16%" />
+<col width="15%" />
+<col width="18%" />
+<col width="13%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>lgpts</strong></td>
+<td align="center">6.924</td>
+<td align="center">0.8817</td>
+<td align="center">7.853</td>
+<td align="center">3.292e-08</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: lgwl ~ lgpts + 0</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">26</td>
+<td align="center">0.4169</td>
+<td align="center">0.7115</td>
+<td align="center">0.7</td>
+</tr>
+</tbody>
+</table>
+<p>So the coefficient for this league is actually 6.924. Crazy.</p>
+</div>
+</div>

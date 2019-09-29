@@ -386,7 +386,7 @@ ggplot(data = pythag_melt, aes(x = Owner, y = value, fill = key)) +
 
 ```
 
-Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie's actual winning percentages exceed what we'd expect based on the points he scores and the points scored against him in both seasons. Zach and Joe are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is *three games* worth of difference. Charlie, feel free to drop that trophy off next time you're driving by Pocahontas. 
+Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie's actual winning percentages exceed what we'd expect based on the points he scores and the points scored against him in both seasons. Zach and Jon are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is *three games* worth of difference. Charlie, feel free to drop that trophy off next time you're driving by Pocahontas. 
 
 ### Empirical Exponent
 

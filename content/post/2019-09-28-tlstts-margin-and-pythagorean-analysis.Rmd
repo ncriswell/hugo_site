@@ -73,7 +73,7 @@ mu_view3 <- mu_view2 %>%
 
 ## Overview
 
-This post will cover material analyzed in a prior weekly update. In the first week of the 2019 NFL Season, some of the results I came across motivated me to look into historical margin of victory. Once I had all that data loaded to my workspace, I also thought it would be fun(?) to check out Pythagorean Win Expecation. Since the 2019 season analyses are not going to be separate, weekly posts but rather a running post that changes every week, I am migrating those two side projects to this page. 
+This post will cover material analyzed in a prior weekly update. In the first week of the 2019 NFL Season, some of the results I came across motivated me to look into historical margin of victory. Once I had all that data loaded to my workspace, I also thought it would be fun(?) to check out Pythagorean Win Expectation. Since the 2019 season analyses are not going to be separate, weekly posts but rather a running post that changes every week, I am migrating those two side projects to this page. 
 
 ## Margin of Victory Analysis
 
@@ -113,7 +113,8 @@ ggplot(data = mov0, aes(x = Owner, y = Margin)) +
   geom_segment(aes(xend = Owner, yend = 0)) +
   geom_point(size = 2, colour = "black") +
   geom_text(aes(label = percent(`Margin %`), 
-                y = Margin), size = 3, colour = "#377EB8") +
+                y = Margin), 
+            size = 3, colour = "#377EB8", fontface = "bold") +
   facet_wrap(~Week, scales = "free_y") + 
   scale_fill_gradient(low = "white", high = "#377EB8", label = percent, 
                       breaks = seq(0, 0.5, by = 0.25),
@@ -122,12 +123,15 @@ ggplot(data = mov0, aes(x = Owner, y = Margin)) +
   ggtitle("TLST: TS - 2019 Season Margin of Victory",
           subtitle = "Margin % indicated in text computed as Margin / Points For") +
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-  theme_nc + 
-  theme(axis.title.x = element_blank())
+   theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 ```
 
-From this we see that margin of victory continues to be pretty high with a couple of real nail-biters spinkled in here and there. A view of this for all seasons (Season 2019 through three week) can be seen below. 
+From this we see that margin of victory continues to be pretty high with a couple of real nail-biters sprinkled in here and there. A view of this for all seasons (Season 2019 through three week) can be seen below. 
 
 ```{r}
 
@@ -199,8 +203,11 @@ mu_17_sum1 <- mu_17_sum0 %>%
   ggtitle("TLST: TS - Margin of Victory Distribution by Week",
           subtitle = "Solid black line in box is median; box is bound by 25th and 75th percentiles") +
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-  theme_nc + 
-  theme(axis.title.x = element_blank())
+   theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
  
 ```
@@ -240,7 +247,9 @@ ggplot(data = teams_df, aes(x = pythag, y = wp)) +
   ggtitle("Comparison of Pythagorean Estimate and\nActual MLB Winning Percentage",
           subtitle = "Red line indicates perfect fit. Actual fit is indicated in blue") + 
   labs(caption = "Lahman Data: 1950-2018") + 
-theme_nc 
+theme_fivethirtyeight() + 
+  theme(axis.title = element_text()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 
 
@@ -363,8 +372,12 @@ ggplot(data = pythag_melt, aes(x = Owner, y = value, fill = key)) +
   ggtitle("TLST: TS - Win % v. Pythagorean Estimate",
           subtitle = "Pythagorean exponent of 2.37 used") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-theme_nc + 
-  theme(axis.title.x = element_blank())
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
+
         
 
 
@@ -387,20 +400,22 @@ pythag_sum1 <- pythag_sum %>%
 
 lm1 <- lm(lgwl ~ lgpts + 0, data = pythag_sum1 %>% filter(Season != "2019"))
 
-ggplot(data = pythag_sum1, aes(x = lgpts, y = lgwl)) + 
+ggplot(data = pythag_sum1 %>% filter(Season != "2019"), aes(x = lgpts, y = lgwl)) + 
   geom_point() + 
   geom_smooth(method = "lm", formula = y~x + 0) + 
   scale_y_continuous(name = expression(log(frac("Wins", "Losses")))) + 
   scale_x_continuous(name = expression(log(frac("Points For", "Points Against")))) + 
-  ggtitle("Log Ratio Relationship") +
+  ggtitle("Log Ratio Relationship", 
+          subtitle = "The slope of this graph represents the empirical Pythagorean estimate") +
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-  theme_nc + 
-  theme(axis.title.x = element_blank())
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
   
   
 ```
 
-Please note, we are forcing that line through 0 as the intercept. Oh also, we can't have 0s since we taking logs here so we're dropping 2019. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I'm just going to bring the regression summary which gives us the slope of the line as the coefficient on `lgwl`. 
+Please note, we are forcing that line through 0 as the intercept. Oh also, we can't since we are taking $\frac{\text{Wins}{\text{Losses}}$ and then getting the log of that, the 2019 season is screwing everything up with divide by 0 errors so the model does use that data. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I'm just going to bring the regression summary which gives us the slope of the line as the coefficient on `lgwl`. 
 
 
 ```{r}

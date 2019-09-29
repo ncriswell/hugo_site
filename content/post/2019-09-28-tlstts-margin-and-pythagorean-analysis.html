@@ -48,13 +48,13 @@ tags: []
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>This post will cover material analyzed in a prior weekly update. In the first week of the 2019 NFL Season, some of the results I came across motivated me to look into historical margin of victory. Once I had all that data loaded to my workspace, I also thought it would be fun(?) to check out Pythagorean Win Expecation. Since the 2019 season analyses are not going to be separate, weekly posts but rather a running post that changes every week, I am migrating those two side projects to this page.</p>
+<p>This post will cover material analyzed in a prior weekly update. In the first week of the 2019 NFL Season, some of the results I came across motivated me to look into historical margin of victory. Once I had all that data loaded to my workspace, I also thought it would be fun(?) to check out Pythagorean Win Expectation. Since the 2019 season analyses are not going to be separate, weekly posts but rather a running post that changes every week, I am migrating those two side projects to this page.</p>
 </div>
 <div id="margin-of-victory-analysis" class="section level2">
 <h2>Margin of Victory Analysis</h2>
 <p>Like I said, this came about because I noticed that the margin of victory for most matchups in the first week of the 2019 season were very high.</p>
 <p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>From this we see that margin of victory continues to be pretty high with a couple of real nail-biters spinkled in here and there. A view of this for all seasons (Season 2019 through three week) can be seen below.</p>
+<p>From this we see that margin of victory continues to be pretty high with a couple of real nail-biters sprinkled in here and there. A view of this for all seasons (Season 2019 through three week) can be seen below.</p>
 <p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>We clearly see that the large margins of victory are common and have always been.</p>
 </div>
@@ -81,7 +81,7 @@ tags: []
 <p><span class="math display">\[\ln\frac{W}{L} = n \times \ln\frac{\text{Points For}}{\text{Points Against}}  \]</span></p>
 <p><span class="math inline">\(n\)</span> is the empirically determined exponent. We can make a plot with <span class="math inline">\(\ln\frac{W}{L}\)</span> on the <span class="math inline">\(y\)</span> and $ $ on the <span class="math inline">\(x\)</span>, draw a line through it and that slope is our actual exponent.</p>
 <p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Please note, we are forcing that line through 0 as the intercept. Oh also, we can’t have 0s since we taking logs here so we’re dropping 2019. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I’m just going to bring the regression summary which gives us the slope of the line as the coefficient on <code>lgwl</code>.</p>
+<p>Please note, we are forcing that line through 0 as the intercept. Oh also, we can’t since we are taking <span class="math inline">\(\frac{\text{Wins}{\text{Losses}}\)</span> and then getting the log of that, the 2019 season is screwing everything up with divide by 0 errors so the model does use that data. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I’m just going to bring the regression summary which gives us the slope of the line as the coefficient on <code>lgwl</code>.</p>
 <table style="width:81%;">
 <colgroup>
 <col width="16%" />

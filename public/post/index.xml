@@ -30,15 +30,6 @@
     </item>
     
     <item>
-      <title>TLSTTS  - 2017 Season Recap</title>
-      <link>/2019/09/22/tlst-ts-2017-season-recap/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/2019/09/22/tlst-ts-2017-season-recap/</guid>
-      <description>IntroductionOverall Season PerformanceOverall Weekly PerformancePosition PerformancePlayer Performance// When the document is fully rendered...$(document).ready(function() {// ...select all header elements...$(&#39;h1, h2, h3, h4, h5&#39;).each(function() {// ...and add an id to them corresponding to their &#39;titles&#39;$(this).attr(&#39;id&#39;, $(this).html());});});IntroductionOverall Season Performance{&#34;</description>
-    </item>
-    
-    <item>
       <title>TLSTTS - 2018 Season Recap</title>
       <link>/2019/09/22/tlst-ts-2018-season-recap/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>

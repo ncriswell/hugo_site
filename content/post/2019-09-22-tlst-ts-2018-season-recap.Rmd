@@ -15,7 +15,12 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      fig.height = 5, 
+                      fig.width = 7, 
+                      fig.align= 'center')
 ```
 
 ```{r}
@@ -130,7 +135,7 @@ From that table we see `SeltzerBod`, `OttoBod`, and `CharBod` all won a whole bu
 
 Tables are fine, but sometimes it is handy to visualize information. Let's do that now. 
 
-```{r, fig.align='center', fig.width = 7.5, fig.height=7.5}
+```{r}
 
 # get number of wins by owner
 owner_wl0 <- weekly_owner_scores1 %>% 
@@ -154,17 +159,21 @@ owner_wl_melt0 <- owner_wl1 %>%
   gather(Outcome, value, -`Owner For/Against`)
 
 ggplot(data = owner_wl_melt0, aes(x = `Owner For/Against`, y = value, fill = Outcome)) + 
-  geom_col(position = "dodge") + 
+  geom_col(position = "dodge", colour = "black") + 
   coord_flip() + 
   scale_x_discrete(name = "Owner: Avg Points For / Avg Points Against ") + 
   scale_y_continuous(breaks = 1:10, name = "Number of Wins or Losses") +
     scale_fill_brewer(palette = "Set1") + 
     ggtitle("TLST NFL Owner Win/Loss Record",
-          subtitle = "y-axis label represents owner and average points for / points against record") + 
+          subtitle = "y-axis label represents owner and average points for/points against") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   theme_fivethirtyeight() + 
   theme(axis.title = element_text(),
-        legend.title = element_blank()) 
+        axis.text.x = element_text(size = 6),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
+
 
 ```
 
@@ -194,7 +203,7 @@ Ok, there you have it. We got a table. Feel free to download and analyze at your
 
 Now that we have our table, lets make some graphs. First, we'll look at a simple graph of performance by week. (Getting those average lines in there was really hard so I hope you appreciate them.) 
 
-```{r, fig.align='center', fig.width= 10, fig.height=8}
+```{r, fig.height=7}
 
 # melth the data down so we can get points for/against as a column
 weekly_owner_scores_melt0 <- weekly_owner_scores1 %>% 
@@ -206,10 +215,10 @@ ggplot(data = weekly_owner_scores_melt0, aes(x = Week, y = value, color = Points
   geom_line(size = 1.3) + 
   geom_hline(data = avg_owner_score, 
              aes(yintercept = avg_points_for), 
-             colour = "#377EB8", linetype = "dashed", size = 1.15) + 
+             colour = "#377EB8", linetype = "dashed", size = 1) + 
   geom_hline(data = avg_owner_score, 
              aes(yintercept = avg_points_against), 
-             colour = "#E41A1C", linetype = "dashed", size = 1.15) + 
+             colour = "#E41A1C", linetype = "dashed", size = 1) + 
   facet_wrap(~Owner) + 
   scale_y_continuous("Point Total") + 
   scale_colour_brewer(palette = "Set1") + 
@@ -220,7 +229,9 @@ ggplot(data = weekly_owner_scores_melt0, aes(x = Week, y = value, color = Points
   theme_fivethirtyeight() + 
   theme(axis.title = element_text(),
         legend.title = element_blank(),
-        axis.text.x = element_text(size = 7)) 
+        axis.text.x = element_text(size = 5),
+        axis.title.x = element_blank(),
+        legend.justification=c(1,0), legend.position=c(1,0)) 
   
   
 
@@ -230,13 +241,13 @@ Ok, now we're talking. `Charbod` seems to consistently beat the shit out of the 
 
 We'll now drop the individual panels and show the distributions of points for and points against by owner. This is a good view because we are able to see the range of values that points for and points against can take for each owner. The black cross bar on the box plot represents the median. Outliers are indicated with dots. 
 
-```{r, fig.align='center', fig.width= 10, fig.height=8}
+```{r, fig.height=7}
 
 ggplot(data = weekly_owner_scores_melt0, aes(x = Owner, y = value, fill = Points)) +
   geom_boxplot() + 
   scale_y_continuous("Point Total") + 
   scale_fill_brewer(palette = "Set1") + 
-  ggtitle("TLST NFL Weekly Point Totals Distribution by Owner") + 
+  ggtitle("TLST:TS - 2018 Point Distribution by Owner") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   theme_fivethirtyeight() + 
   theme(axis.title = element_text(),
@@ -252,7 +263,7 @@ Looks like `BluesBod` had some pretty rough weeks based on his points for line e
 
 This Sleeper API provides every stat contribution for every stat category for every player. I don't know how valuable it is to look at the stat categories, but looking at score by player definitely could be interesting. One note: I am using the positions listed for players based on a daily updated reference API endpoint. I am not looking at the slot you had them at for any given week. I am looking at their listed position *today*. This likely won't cause too much trouble, but I wanted to call that out before some nerd tells me about a player who changed positions. Maybe in the future I can change the analysis to do it based on the positions we slot our players at. Who knows. 
 
-```{r, fig.width = 7, fig.height = 7, fig.align='center'}
+```{r}
 owner_position_view0 <- mu_unnest_view2 %>% 
   filter(!is.na(position)) %>% 
   group_by(display_name, position, week) %>% 
@@ -273,7 +284,7 @@ ggplot(data = owner_position_view0,
              aes(yintercept = avg_contribution, colour = position),
              show.legend = FALSE, size = 1.25) +
   geom_point(aes(colour = position), size = 5, alpha = 0.8) + 
-  scale_colour_brewer(name = "Position", palette = "Set1") + 
+  scale_colour_brewer(palette = "Set1") + 
   scale_y_continuous(name = "Average Weekly Position Contribution") + 
   scale_x_discrete(name = "") + 
   ggtitle("Contribution by Position and Owner", 
@@ -282,7 +293,8 @@ ggplot(data = owner_position_view0,
   theme_fivethirtyeight() + 
   theme(axis.title = element_text(),
         legend.title = element_blank()) + 
-  coord_flip()
+  coord_flip() +
+  guides(colour = guide_legend(nrow = 1))
     
 ```
 
@@ -290,7 +302,7 @@ I mean, FFS, did I even start a tight end? I'm getting beat by `BluesBod` on tha
 
 Although it is kind of hard to read due to our giant league size, we can also look at position performance by week. 
 
-```{r, fig.height = 10, fig.width = 10, fig.align='center'}
+```{r, fig.height=7}
 week_position_view0 <- mu_unnest_view2 %>% 
   group_by(display_name, position, week) %>% 
   summarise(position_score = sum(player_score)) %>% 
@@ -310,8 +322,11 @@ ggplot(data = week_position_view0,
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   theme_fivethirtyeight() + 
   theme(axis.title = element_text(),
-        legend.title = element_blank(),
-        axis.text.x = element_text(size = 7)) 
+        axis.text.x = element_text(size = 5),
+        axis.text.y = element_text(size = 7),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 
 ```

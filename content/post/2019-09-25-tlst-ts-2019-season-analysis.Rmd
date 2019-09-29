@@ -160,8 +160,12 @@ ggplot(data = owner_wl0, aes(x = Owner, y = records, fill = Outcome)) +
   coord_flip() + 
   ggtitle("TLST: TS - 2019 Win-Loss Record") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-  theme_nc + 
-  theme(axis.title.x = element_blank())
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.text.x = element_text(size = 6),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 ```
 
@@ -209,11 +213,16 @@ ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
   scale_fill_brewer(palette = "Set1") + 
   coord_flip() + 
   ggtitle("TLST: TS - 2019 Season Weekly Results",
-          subtitle = "Teams are grouped by matchup\nSolid line is week median. Dotted line is week average.") + 
+          subtitle = "Teams are grouped by matchup. Solid line = week median; dotted line = week average.") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-  theme_nc + 
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank())
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.text.x = element_text(size = 6),
+        axis.title.x =element_blank(),
+        legend.title = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
   
 ```
 
@@ -246,8 +255,12 @@ ggplot(data = rr_view0,
   ggtitle("TLST: TS - 2019 Round Robin Analysis",
           subtitle = "Graph is arranged so total round robin wins increases left to right") +
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
-  theme_nc + 
-  theme(axis.title.x = element_blank())
+  theme_fivethirtyeight() + 
+  theme(axis.title.x =element_blank(),
+        axis.text.x = element_text(angle = 90, size =8, hjust = 1), 
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
+  
 
 ```
 
@@ -312,11 +325,12 @@ ggplot(data = weekly_owner_position0 %>% filter(starter == TRUE),
   geom_text(position = position_stack(vjust = 0.5), size = 2) + 
   scale_fill_brewer(palette = "Set1", name = "Position") +
   facet_wrap(~Week) + 
-  ggtitle("TLST: TS - 2019 Season Weekly Position Scores by Owner")  +
+  ggtitle("TLST: TS - 2019 Season Weekly Position Scores")  +
     labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   coord_flip() + 
-   theme_nc + 
-  theme(axis.title = element_blank())
+  theme_fivethirtyeight() + 
+  theme(legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 ```
 
@@ -348,12 +362,13 @@ ggplot(data = owner_position_view0,
   scale_colour_brewer(name = "Position", palette = "Set1") + 
   scale_y_continuous(name = "Average Weekly Position Contribution") + 
   scale_x_discrete(name = "") + 
-  ggtitle("Average Weekly Contribution by Position and Owner", 
+  ggtitle("Average Weekly Contribution by Position", 
           subtitle = "Vertical lines represent league weekly average") + 
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   coord_flip() + 
-   theme_nc + 
-  theme(axis.title = element_blank())
+  theme_fivethirtyeight() + 
+  theme(legend.title = element_blank()) +
+  guides(color = guide_legend(nrow = 1, keyheight = 0.5))
 
 ```
 

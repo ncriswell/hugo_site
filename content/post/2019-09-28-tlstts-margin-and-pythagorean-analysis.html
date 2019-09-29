@@ -6,6 +6,9 @@ slug: tlstts-margin-and-pythagorean-analysis
 output:
   blogdown::html_page:
     toc: true
+header-includes:
+   - \usepackage{cancel}
+   - \usepackage{[colorlinks = true, linkcolor = blue, urlcolor = blue, citecolor = blue, authorcolor = blue]{hyperref}}
 categories:
   - fantasy
   - football
@@ -42,6 +45,7 @@ tags: []
 <li><a href="#pythagorean-win-expectation">Pythagorean Win Expectation</a><ul>
 <li><a href="#what-is-this">What is This?</a></li>
 <li><a href="#adapting-for-football">Adapting for Football</a></li>
+<li><a href="#empirical-exponent">Empirical Exponent</a></li>
 </ul></li>
 </ul>
 </div>
@@ -77,11 +81,38 @@ tags: []
 <p>There you have it as a table. Let’s add a little color…</p>
 <p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p>Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie’s actual winning percentages exceed what we’d expect based on the points he scores and the points scored against him in both seasons. Zach and Joe are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is <em>three games</em> worth of difference. Charlie, feel free to drop that trophy off next time you’re driving by Pocahontas.</p>
-<p>One that that we <em>can do</em> is determine a better fit for that exponent. You’ll have to take my word for it, but we can rearrange the formula for the Pythagorean percentage to be linear in the exponent. After some algebra magic, we end up with:</p>
-<p><span class="math display">\[\ln\frac{W}{L} = n \times \ln\frac{\text{Points For}}{\text{Points Against}}  \]</span></p>
-<p><span class="math inline">\(n\)</span> is the empirically determined exponent. We can make a plot with <span class="math inline">\(\ln\frac{W}{L}\)</span> on the <span class="math inline">\(y\)</span> and $ $ on the <span class="math inline">\(x\)</span>, draw a line through it and that slope is our actual exponent.</p>
+</div>
+<div id="empirical-exponent" class="section level3">
+<h3>Empirical Exponent</h3>
+<p>One that that we <em>can do</em> is determine a better fit for that exponent. If we say that <span class="math inline">\(w\)</span> is our winning percentage, we can set up a formula where the Pythagorean exponent is a variable. Typing is hard so we’ll say that <span class="math inline">\(\text{Points For} = PF\)</span> and <span class="math inline">\(\text{Points Against} = PA\)</span>. We’ll end up with something like this:</p>
+<p><span class="math display">\[ 
+w = \frac{W}{W + L}  = \frac{PF^n}{PF^n + PA^n}
+\]</span></p>
+<p>All we have to do now is switch this up a bit so that <span class="math inline">\(n\)</span> in linear with our other variables. Then we can use the known values of <span class="math inline">\(PF\)</span> and <span class="math inline">\(PA\)</span> for all of our teams over the last two seasons to model out what <span class="math inline">\(n\)</span> is. Solving for this is a simple matter of…</p>
+<p>$<span class="math display">\[\begin{align}
+
+\begin{split}
+
+w = \frac{W}{W + L}  = \frac{PF^n}{PF^n + PA^n}  \Rightarrow \text{ multiply each side by denominator} \\
+
+  W \times (PF^n + PA^n) = PF^n \times (W + L)  \Rightarrow \text{ distribute} \\
+
+  W \times PF^n + W \times PA^n = PF^n \times W + PF^n \times L  \Rightarrow \text{ subtract like terms from each side}  \\
+
+  W \times PF^n + W \times PA^n = PF^n \times W + PF^n \times L  \Rightarrow  \text{ rearrange terms} \\
+
+  W - L = PF^n - PA^n  \Rightarrow \text{ take natural log of each side} \\
+
+  \log(W - L) = \log(PF^n - PA^n) \Rightarrow \text{ use properties of logs}  \\
+
+  \log\frac{W}{L} = n\times \log \frac{PF}{PA}
+
+  \end{split}
+
+\end{align}\]</span>$</p>
+<p>And just like that, we now have an equation that is linear in <span class="math inline">\(n\)</span>, our empirically determined exponent. This is good because now we can make a plot with <span class="math inline">\(\ln\frac{W}{L}\)</span> on the <span class="math inline">\(y\)</span> and $ $ on the <span class="math inline">\(x\)</span>, draw a line through it and that slope is our actual exponent.</p>
 <p><img src="/post/2019-09-28-tlstts-margin-and-pythagorean-analysis_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Please note, we are forcing that line through 0 as the intercept. Oh also, we can’t since we are taking <span class="math inline">\(\frac{\text{Wins}{\text{Losses}}\)</span> and then getting the log of that, the 2019 season is screwing everything up with divide by 0 errors so the model does use that data. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I’m just going to bring the regression summary which gives us the slope of the line as the coefficient on <code>lgwl</code>.</p>
+<p>Please note, we are forcing that line through 0 as the intercept. Oh also, since we are taking <span class="math inline">\(\frac{\text{Wins}}{\text{Losses}}\)</span> and then getting the <span class="math inline">\(\text{log}\)</span> of that for the line fit, the 2019 season is screwing everything up with divide by 0 errors so the model doesn’t use that data. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I’m just going to bring the regression summary which gives us the slope of the line as the coefficient on <code>lgwl</code>.</p>
 <table style="width:81%;">
 <colgroup>
 <col width="16%" />

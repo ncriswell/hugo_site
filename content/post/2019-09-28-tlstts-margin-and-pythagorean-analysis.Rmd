@@ -6,6 +6,9 @@ slug: tlstts-margin-and-pythagorean-analysis
 output:
   blogdown::html_page:
     toc: true
+header-includes:
+   - \usepackage{cancel}
+   - \usepackage{[colorlinks = true, linkcolor = blue, urlcolor = blue, citecolor = blue, authorcolor = blue]{hyperref}}
 categories:
   - fantasy
   - football
@@ -226,7 +229,7 @@ $$ \text{Winning Percentage} = \frac{\text{Runs Scored}^2}{\text{Runs Scored}^2 
 
 Let's compare this prediction for winning percentage to the simple run differential. We'll use data from the [Lahman](http://www.seanlahman.com/) database. He has all kinds of stuff going all the way back to the 1871 season, but we'll limit things from 1950 - 2018 to eliminate noise from The Drinkin' Beers and Rippin' Cigs while Playing Era. 
 
-```{r, fig.align='center', fig.height=7, fig.width=7}
+```{r, fig.align='center'}
 library(Lahman)
 
 teams_df <- Teams %>% 
@@ -385,12 +388,40 @@ ggplot(data = pythag_melt, aes(x = Owner, y = value, fill = key)) +
 
 Well that is interesting. In addition to committing the mortal sin of Changing His Name and Ruining Data Integrity between Seasons, Charlie's actual winning percentages exceed what we'd expect based on the points he scores and the points scored against him in both seasons. Zach and Joe are guilty of this in 2017 as well. Sam suffers some really bad luck as his Pythagorean estimate is actually sort of respectable in 2017-not so much is actual percentage. And when you consider that these are percentages of 16 game seasons, something like my difference of 20% in 2018 is *three games* worth of difference. Charlie, feel free to drop that trophy off next time you're driving by Pocahontas. 
 
-One that that we *can do* is determine a better fit for that exponent. You'll have to take my word for it, but we can rearrange the formula for the Pythagorean percentage to be linear in the exponent. After some algebra magic, we end up with:
+### Empirical Exponent
 
-$$\ln\frac{W}{L} = n \times \ln\frac{\text{Points For}}{\text{Points Against}}  $$
+One that that we *can do* is determine a better fit for that exponent. If we say that $w$ is our winning percentage, we can set up a formula where the Pythagorean exponent is a variable. Typing is hard so we'll say that $\text{Points For} = PF$ and $\text{Points Against} = PA$. We'll end up with something like this: 
 
-$n$ is the empirically determined exponent. We can make a plot with $\ln\frac{W}{L}$ on the $y$ and $\ln\frac{\text{Points For}}{\text{Points Against}} $ on the $x$, draw a line through it and that slope is our actual exponent. 
 
+$$ 
+w = \frac{W}{W + L}  = \frac{PF^n}{PF^n + PA^n}
+$$
+
+All we have to do now is switch this up a bit so that $n$ in linear with our other variables. Then we can use the known values of $PF$ and $PA$ for all of our teams over the last two seasons to model out what $n$ is. Solving for this is a simple matter of...
+
+$\begin{align}
+
+\begin{split}
+
+w = \frac{W}{W + L}  = \frac{PF^n}{PF^n + PA^n}  \Rightarrow \text{ multiply each side by denominator} \\
+
+  W \times (PF^n + PA^n) = PF^n \times (W + L)  \Rightarrow \text{ distribute} \\
+
+  W \times PF^n + W \times PA^n = PF^n \times W + PF^n \times L  \Rightarrow \text{ subtract like terms from each side}  \\
+
+  W \times PF^n + W \times PA^n = PF^n \times W + PF^n \times L  \Rightarrow  \text{ rearrange terms} \\
+
+  W - L = PF^n - PA^n  \Rightarrow \text{ take natural log of each side} \\
+
+  \log(W - L) = \log(PF^n - PA^n) \Rightarrow \text{ use properties of logs}  \\
+
+  \log\frac{W}{L} = n\times \log \frac{PF}{PA}
+
+  \end{split}
+
+\end{align}$
+
+And just like that, we now have an equation that is linear in $n$, our empirically determined exponent. This is good because now we can make a plot with $\ln\frac{W}{L}$ on the $y$ and $\ln\frac{\text{Points For}}{\text{Points Against}} $ on the $x$, draw a line through it and that slope is our actual exponent. 
 
 ```{r}
 
@@ -406,7 +437,7 @@ ggplot(data = pythag_sum1 %>% filter(Season != "2019"), aes(x = lgpts, y = lgwl)
   scale_y_continuous(name = expression(log(frac("Wins", "Losses")))) + 
   scale_x_continuous(name = expression(log(frac("Points For", "Points Against")))) + 
   ggtitle("Log Ratio Relationship", 
-          subtitle = "The slope of this graph represents the empirical Pythagorean estimate") +
+          subtitle = "The slope of this graph represents the empirical Pythagorean exponent") +
   labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
   theme_fivethirtyeight() + 
   theme(axis.title = element_text()) +
@@ -415,7 +446,7 @@ ggplot(data = pythag_sum1 %>% filter(Season != "2019"), aes(x = lgpts, y = lgwl)
   
 ```
 
-Please note, we are forcing that line through 0 as the intercept. Oh also, we can't since we are taking $\frac{\text{Wins}{\text{Losses}}$ and then getting the log of that, the 2019 season is screwing everything up with divide by 0 errors so the model does use that data. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I'm just going to bring the regression summary which gives us the slope of the line as the coefficient on `lgwl`. 
+Please note, we are forcing that line through 0 as the intercept. Oh also, since we are taking $\frac{\text{Wins}}{\text{Losses}}$ and then getting the $\text{log}$ of that for the line fit, the 2019 season is screwing everything up with divide by 0 errors so the model doesn't use that data. Whats that? You quit reading several sections ago? Fantastic. Anyways, I am about 20 minutes over budget on the time I was going to bury into this today and so I'm just going to bring the regression summary which gives us the slope of the line as the coefficient on `lgwl`. 
 
 
 ```{r}

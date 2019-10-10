@@ -31,6 +31,8 @@ library(DT)             # JS datatables package
 library(ggthemes)       # For 538 theme
 library(scales)         # Labels for ggplot scales
 library(widgetframe)    # putting DTs in sites
+library(ggridges)       # joy plots
+
 ```
 
 ```{r get_data, cache=TRUE}
@@ -47,10 +49,10 @@ lg_rules <- s19_info$lg_rules
 #### Combining Data ####========================================================
 
 # pull matchup and stat information
-mu_out <- F_get_weekly_matchup(season = 2019, week = 1:4)
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:5)
 mu_view0 <- mu_out$mu_view0
 
-stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:4)
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:5)
 stat_sum0 <- stat_out$player_stats_sum0
 stat_melt0 <- stat_out$stats_melt1
 
@@ -89,11 +91,15 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 * Data available through the third week of the season
 * Analysis included for Winners and Losers, Round Robin, and Position Performance
 
-
 ### Week 4 - October 2, 2019
 
 * Data available through the fourth week of the season
 * Added transaction summary data and downloadable tables
+
+### Week 5 - October, 8, 2019
+
+* Data available through the fifth week of the season
+* Added new graphs to the Winners and Losers section
 
 ## Winners and Losers
 
@@ -185,37 +191,112 @@ ggplot(data = owner_wl0, aes(x = Owner, y = records, fill = Outcome)) +
 
 ```
 
-Both Jon and I lost for the first time this week, erasing our perfect records. Max continues to maintain a perfect winning percentage despite being in the lower half of total scoring for the league. Well done, Max. Otto and Nate can't really catch a break here. 
+Max lost his perfect record this week. Nate and Otto kept theirs. 
 
-If you are interested in how each player has performed league to date, check out the table below. 
+We are getting further along in the season so we can probably start to make some graphs that show trends. We'll just start with points for and points against along with the win/loss outcome. 
 
+```{r, fig.height=6}
 
-```{r}
-mu_dt <- mu_view3 %>% 
-  mutate(Week = as.factor(as.numeric(week)),
-         Score = round(player_score, 2)) %>% 
-  select(Week, display_name, matchup_id, position, last_name, 
-         first_name, Score, starter) %>% 
-  mutate_at(c("display_name", "matchup_id", "position", "last_name", "first_name"), as.factor) %>% 
-  rename(Owner = display_name, 
-         Matchup = matchup_id,
-         Last = last_name, 
-         First = first_name, 
-         Position = position,
-         Starter = starter) 
+# need to melt the data first
+weekly_owner_score_melt0 <- weekly_owner_scores1 %>% 
+  filter(starter == TRUE) %>% 
+  select(Week, `Points For`, `Points Against`, Owner, Outcome) %>% 
+  gather(key, value, -Week, -Owner, -Outcome)
 
-datatable(mu_dt,
-          class = 'cell-border stripe',
-          rownames = FALSE, 
-          caption = "TLST: TS 2019 NFL Season: Weekly Stats",
-          filter = 'top',
-          extensions = 'Buttons', 
-          options = list(dom = 'lBfrtip', 
-                         buttons = list('excel', "csv"),
-                         pageLength = 10, autoWidth = TRUE))
+# will want the average info
+avg_owner_score <- weekly_owner_scores1 %>% 
+  filter(starter == TRUE) %>% 
+  group_by(Owner) %>% 
+  summarise(avg_points_for = round(mean(`Points For`), 0), 
+            avg_points_against = round(mean(`Points Against`), 0))
+
+# make a graph of this
+ggplot(data = weekly_owner_score_melt0, 
+       aes(x = Week, y = value, colour = key, group = key)) + 
+  geom_line() + 
+  geom_point() +
+  geom_hline(data = avg_owner_score, 
+             aes(yintercept = avg_points_for), 
+             colour = "#377EB8", linetype = "dashed", size = 1) + 
+  geom_hline(data = avg_owner_score, 
+             aes(yintercept = avg_points_against), 
+             colour = "#E41A1C", linetype = "dashed", size = 1) + 
+  scale_colour_brewer(palette = "Set1") + 
+  scale_y_continuous(name = "Weekly Points") + 
+  facet_wrap(~Owner, scales = "free_x") +
+  ggtitle("TLST: TS - 2019 Weekly Scores by Owner",
+          subtitle = "Owner average indicated with dotted lines") + 
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.text.x = element_text(size = 6),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 
 ```
+
+Now that I am two weeks into my downturn, I feel like it is OK for me to worry. Things aren't looking good. 
+
+I don't know if I'm crazy about this view. And that isn't just because my blue line is moving the wrong way. It all seems sort of bunched up. We could allow each plot to sort of have a floating y-axis and then the movement would be a little more obvious but the relative scales will be harder to compare between Owners. But, hey, space on a website it cheap nd it requires changing literally two characters in the code, so let's go for it. 
+
+
+```{r, fig.height=6}
+
+ggplot(data = weekly_owner_score_melt0, 
+       aes(x = Week, y = value, colour = key, group = key)) + 
+  geom_line() + 
+  geom_point() +
+  geom_hline(data = avg_owner_score, 
+             aes(yintercept = avg_points_for), 
+             colour = "#377EB8", linetype = "dashed", size = 1) + 
+  geom_hline(data = avg_owner_score, 
+             aes(yintercept = avg_points_against), 
+             colour = "#E41A1C", linetype = "dashed", size = 1) + 
+  scale_colour_brewer(palette = "Set1") + 
+  scale_y_continuous(name = "Weekly Points") + 
+  facet_wrap(~Owner, scales = "free") +
+  ggtitle("TLST: TS - 2019 Weekly Scores by Owner",
+          subtitle = "Owner average indicated with dotted lines\nNote y-axis varies by owner") + 
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.text.x = element_text(size = 6),
+        axis.title.x =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
+
+
+```
+
+This makes it a little easier to see the bounciness of people like Scott, Tony, Jon, James and the consistency (for ~~better or~~ worse) of Sam and Otto. 
+
+On the subject of variation, we can actually make some perhaps interesting distribution plots showing the range of points for and points against for each player. In the past, I have used box and whisker plots for this purpose, but there is another graph type that is also well-suited to show the spread of a metric. These are called [Joy Plots](https://eagereyes.org/blog/2017/joy-plots) after the iconic album artwork of [Joy Division's classic 1979 *Unknown Pleasures*](https://pitchfork.com/reviews/albums/11624-unknown-pleasurescloserstill/) debut record. (And when I say, **"classic"**, I mean that the album art is cool, the first track is killer, and critics everywhere overstate how important it is for *The Discourse*.)
+
+```{r}
+
+ggplot(data = weekly_owner_score_melt0, 
+       aes(y = Owner, x = value, fill = key)) +
+  geom_density_ridges(alpha = 0.8) +
+  scale_fill_brewer(palette = "Set1") + 
+  scale_x_continuous(name = "Points") +
+  ggtitle("TLST: TS - 2019 Weekly Points Distribution") +
+  labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  theme_fivethirtyeight() + 
+  theme(axis.title = element_text(),
+        axis.text.x = element_text(size = 6),
+        axis.title.y =element_blank(),
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
+
+
+
+```
+
+The higher the bump, the more likely you are to find a weekly point total for that owner at that point on the x-axis. People who have large variation in their point totals will see a broad-ish and shallow-ish distribution. People who are consistent will have more concentrated, single bumps. So again, Otto and Charlie are pretty consistent on their Points For. Most of us have a reasonable variation on Points Against, but we see people like Zach and Nate have their Points Against shifted to the higher end, indicating they take lots of punishment. People like Dave, Max, Jon, and me have our Points Against shifted to the lower end. 
+
+Even though it is going to start getting harder and harder to view, we can show the individual matchup plots for each week, too. 
 
 ```{r, fig.align='center', fig.height=5, fig.width=7}
 ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
@@ -242,7 +323,7 @@ ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
   
 ```
 
-That week four graph is something else, right? The Tony/Nate matchup and the Zach/Jeremy matchup represent the two lowest and two highest scorers of the week. But, only one of them is allowed to win. So, Zach is really getting screwed this week and Tony is getting away with one.
+As per usual for Zach, he outperformed most other players but still lost. This also happened to Max and Nate, but that is more of a new experience for them. Boy, Joe really came by his loss honestly last week, didn't he? Worst score by a lot from the commish. What I'm saying is that he got absolutely killed. 
 
 ## Round Robin Analysis 
 
@@ -282,7 +363,7 @@ ggplot(data = rr_view0,
 
 ```
 
-This graph does a really good job of showing people who are benefiting from favorable matchupes and people who might have gotten robbed here and there. This graph now looks crazy as Tony's blue box in week four contains a 1 and Zach's red box contains a 12. Tony could have beat only one player in the league-the one he played. Zach would have beaten every player in the league except for one-the one he played. This contributes to Zach's being the overall points and round robin leader but only being at 0.500 winning percentage.   
+This graph continues to tell the story of Zach's season so far. He scores a ton but has the worst matchup luck imaginable. I am slipping in the round robin rankings as my losing streak continues. It looks to me like Zach, Jon and Dave are the teams to beat right now. Sam shows extreme consistency relative to the rest of the league and Scott shows whatever the opposite of that is. Inconsistency, I guess. Max suffered his first loss of the season which I think the commish believes if probably overdue based on the ink he spilled on it in his last update. But as noted above, this week Max actually had an above average performance. 
 
 ## Position Performance
 
@@ -352,7 +433,7 @@ ggplot(data = weekly_owner_position0 %>% filter(starter == TRUE),
 
 ```
 
-If you like this view, I would say don't get used to it. This isn't going to be readable by the end of the season. The excess of purple and yellow in the plot above tells us pretty clearly that running back and wide receivers run the show in fantasy football. Unless you have the best QB in the league...
+If you like this view, I would say don't get used to it. This isn't going to be readable by the end of the season. I don't really have a lot to say about this view ever because it is hard to read due to our giant league size. It is crazy to see all those defensive points that Jon put up last week. 
 
 Another useful view will let us see the relative strength of our positions against the rest of the league in a simpler view. We can plot the average position score by owner for all positions and add indicators for league average. 
 
@@ -390,7 +471,7 @@ ggplot(data = owner_position_view0,
 
 ```
 
-The New England defense continues to outpace most of our quarterbacks and Dave's own RBs. And look out, ~~Jake~~ Pat Mahomes, Jackson is now the highest scoring QB in the league. Its too bad the rest of Otto's team isn't good at all. My RB and WR numbers are very, very average. I think that is going to be a problem if Pat has any more down weeks. Jon's RB core is beastly, which helps to shore up his less-beastly WRs. 
+Are Jon's WR really that bad? That must be why he keeps asking for Julio Jones. Sorry, Jon, that is one of the players in the NFL who I still recognize the name of, and I have no plans of giving him up. Dave's defense is *still* killing it by keeping pace with both his RB and QB average scores. With his crazy WR scores, he will probably still be in good shape when (if?) the New England defense regresses to the mean. 
 
 ## Transaction Summary
 
@@ -400,7 +481,7 @@ Here is a summary of the transaction count by owner.
 
 ```{r}
 
-trans_res <- lapply(1:4, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
+trans_res <- lapply(1:5, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
                            lg_id, 
                            "/transactions/", m))) 
 
@@ -460,9 +541,9 @@ trans_view0 <- trans_ref_view0 %>%
   rename(`Dropped Player` = player_name, 
          `Dropped Position` = position) %>% 
   select(-add_player_id, -drop_player_id, -user_id, -roster_ids) %>% 
-  mutate_all(as.factor) %>% 
   mutate(type = str_to_title(type), 
          status = str_to_title(status)) %>% 
+    mutate_all(as.factor) %>%
   rename(Owner = display_name, 
          Week = week, 
          Type = type, 
@@ -492,9 +573,8 @@ ggplot(data = trans_sum,
   
 
 
-```
 
-We see that our league-leader isn't stressing too much about making moves. You can't really argue with his results. 
+```
 
 For those more inclined to see have a view of the transaction-level data, I have included two tables below. One is for non-trade transactions and the other one includes trades. I am not sure of the best way to show this. I kind of wanted to show transactions next to each other if they occurred at the same time (if you added a player and dropped another). But there are instances of adds without drops and drops without adds. Also, trades get really hard to show in this way since an uneven number of players can be involved from each team. I am open to suggestions on this one. 
 

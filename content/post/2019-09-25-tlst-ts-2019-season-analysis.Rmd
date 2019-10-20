@@ -49,10 +49,10 @@ lg_rules <- s19_info$lg_rules
 #### Combining Data ####========================================================
 
 # pull matchup and stat information
-mu_out <- F_get_weekly_matchup(season = 2019, week = 1:5)
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:6)
 mu_view0 <- mu_out$mu_view0
 
-stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:5)
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:6)
 stat_sum0 <- stat_out$player_stats_sum0
 stat_melt0 <- stat_out$stats_melt1
 
@@ -96,10 +96,14 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 * Data available through the fourth week of the season
 * Added transaction summary data and downloadable tables
 
-### Week 5 - October, 8, 2019
+### Week 5 - October 8, 2019
 
 * Data available through the fifth week of the season
 * Added new graphs to the Winners and Losers section
+
+### Week 6 - October 20, 2019
+
+* Data available through the sixth week of the season
 
 ## Winners and Losers
 
@@ -191,7 +195,7 @@ ggplot(data = owner_wl0, aes(x = Owner, y = records, fill = Outcome)) +
 
 ```
 
-Max lost his perfect record this week. Nate and Otto kept theirs. 
+Half of the league is at .500 at this point. Eight teams make the playoffs so things are really up for grabs still. Except for probably Nate and Joe. And, me, probably. Pat's injury has me pretty pessimistic about the rest of the season. 
 
 We are getting further along in the season so we can probably start to make some graphs that show trends. We'll just start with points for and points against along with the win/loss outcome. 
 
@@ -237,9 +241,7 @@ ggplot(data = weekly_owner_score_melt0,
 
 ```
 
-Now that I am two weeks into my downturn, I feel like it is OK for me to worry. Things aren't looking good. 
-
-I don't know if I'm crazy about this view. And that isn't just because my blue line is moving the wrong way. It all seems sort of bunched up. We could allow each plot to sort of have a floating y-axis and then the movement would be a little more obvious but the relative scales will be harder to compare between Owners. But, hey, space on a website it cheap nd it requires changing literally two characters in the code, so let's go for it. 
+I don't know if I'm crazy about this view. And that isn't just because my blue line is moving the wrong way. It all seems sort of bunched up. We could allow each plot to sort of have a floating y-axis and then the movement would be a little more obvious but the relative scales will be harder to compare between Owners. But, hey, space on a website it cheap and it requires changing literally two characters in the code, so let's go for it. 
 
 
 ```{r, fig.height=6}
@@ -270,8 +272,6 @@ ggplot(data = weekly_owner_score_melt0,
 
 ```
 
-This makes it a little easier to see the bounciness of people like Scott, Tony, Jon, James and the consistency (for ~~better or~~ worse) of Sam and Otto. 
-
 On the subject of variation, we can actually make some perhaps interesting distribution plots showing the range of points for and points against for each player. In the past, I have used box and whisker plots for this purpose, but there is another graph type that is also well-suited to show the spread of a metric. These are called [Joy Plots](https://eagereyes.org/blog/2017/joy-plots) after the iconic album artwork of [Joy Division's classic 1979 *Unknown Pleasures*](https://pitchfork.com/reviews/albums/11624-unknown-pleasurescloserstill/) debut record. (And when I say, **"classic"**, I mean that the album art is cool, the first track is killer, and critics everywhere overstate how important it is for *The Discourse*.)
 
 ```{r}
@@ -294,7 +294,7 @@ ggplot(data = weekly_owner_score_melt0,
 
 ```
 
-The higher the bump, the more likely you are to find a weekly point total for that owner at that point on the x-axis. People who have large variation in their point totals will see a broad-ish and shallow-ish distribution. People who are consistent will have more concentrated, single bumps. So again, Otto and Charlie are pretty consistent on their Points For. Most of us have a reasonable variation on Points Against, but we see people like Zach and Nate have their Points Against shifted to the higher end, indicating they take lots of punishment. People like Dave, Max, Jon, and me have our Points Against shifted to the lower end. 
+The higher the bump, the more likely you are to find a weekly point total for that owner at that point on the x-axis. People who have large variation in their point totals will see a broad-ish and shallow-ish distribution. People who are consistent will have more concentrated, single bumps. 
 
 Even though it is going to start getting harder and harder to view, we can show the individual matchup plots for each week, too. 
 
@@ -322,8 +322,6 @@ ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
   guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
   
 ```
-
-As per usual for Zach, he outperformed most other players but still lost. This also happened to Max and Nate, but that is more of a new experience for them. Boy, Joe really came by his loss honestly last week, didn't he? Worst score by a lot from the commish. What I'm saying is that he got absolutely killed. 
 
 ## Round Robin Analysis 
 
@@ -363,7 +361,7 @@ ggplot(data = rr_view0,
 
 ```
 
-This graph continues to tell the story of Zach's season so far. He scores a ton but has the worst matchup luck imaginable. I am slipping in the round robin rankings as my losing streak continues. It looks to me like Zach, Jon and Dave are the teams to beat right now. Sam shows extreme consistency relative to the rest of the league and Scott shows whatever the opposite of that is. Inconsistency, I guess. Max suffered his first loss of the season which I think the commish believes if probably overdue based on the ink he spilled on it in his last update. But as noted above, this week Max actually had an above average performance. 
+Zach continues his reign as the scoring champion. Hopefully he's put his early season bad luck matchup behind and he can keep turning his high point totals into wins, I can't help but feel like Charlie and I are in the process of trading places. Two weeks ago, Joe ended Nate's run of worst point totals in a row. Now Joe holds a two-week run of his own. We'll see how long he can keep this up. 
 
 ## Position Performance
 
@@ -433,7 +431,7 @@ ggplot(data = weekly_owner_position0 %>% filter(starter == TRUE),
 
 ```
 
-If you like this view, I would say don't get used to it. This isn't going to be readable by the end of the season. I don't really have a lot to say about this view ever because it is hard to read due to our giant league size. It is crazy to see all those defensive points that Jon put up last week. 
+If you like this view, I would say don't get used to it. This isn't going to be readable by the end of the season. I don't really have a lot to say about this view ever because it is hard to read due to our giant league size.
 
 Another useful view will let us see the relative strength of our positions against the rest of the league in a simpler view. We can plot the average position score by owner for all positions and add indicators for league average. 
 
@@ -471,8 +469,6 @@ ggplot(data = owner_position_view0,
 
 ```
 
-Are Jon's WR really that bad? That must be why he keeps asking for Julio Jones. Sorry, Jon, that is one of the players in the NFL who I still recognize the name of, and I have no plans of giving him up. Dave's defense is *still* killing it by keeping pace with both his RB and QB average scores. With his crazy WR scores, he will probably still be in good shape when (if?) the New England defense regresses to the mean. 
-
 ## Transaction Summary
 
 The fantastic Sleeper API also had end points to track transactions. We can pull data on Adds, Drops, Waiver Claims, and Trades. Unfortunately the API doesn't have end points for proposed but rejected trades. Per the Sleeper API documentation, their servers couldn't handle the storage space required by Jeremy's trade proposals. 
@@ -481,7 +477,7 @@ Here is a summary of the transaction count by owner.
 
 ```{r}
 
-trans_res <- lapply(1:5, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
+trans_res <- lapply(1:6, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
                            lg_id, 
                            "/transactions/", m))) 
 

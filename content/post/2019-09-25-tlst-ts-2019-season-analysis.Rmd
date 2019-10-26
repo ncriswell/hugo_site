@@ -469,7 +469,7 @@ tlst_coef <- round(coefficients(lm_pythag), 3)
 
 ```
 
-### Alternative Winning Percentages {.tabset}
+### Alternative Winning Percentages 
 
 I am mostly in this whole thing for the draft parties and the data, but if I were someone who was interested in the best team winning, I feel like this graph would drive me to want the league to consider performance against the median in addition to the head-to-head scores. One thing we can do is determine what everyone's performance would have been a few different ways:
 
@@ -519,6 +519,27 @@ ggplot(data = weekly_gather0, aes(x = Owner, y = `Winning %`,
 
 ```
 
+#### Table of Alternative Winning Percentages
+
+```{r}
+
+
+datatable(weekly_owner_scores2 %>% arrange(desc(`Median %`)),
+          class = 'cell-border stripe',
+          rownames = FALSE, 
+          caption = "TLST: TS 2019 NFL Season: Alternative Winning %s",
+          filter = 'top',
+          extensions = 'Buttons', 
+          options = list(dom = 'lBfrtip', 
+                         buttons = list('excel', "csv"),
+                         pageLength = 14, autoWidth = TRUE)) %>% 
+  formatPercentage(c("Winning %", "Median %", "NFL Pythag", "TLST Pythag")
+                   , 1)
+
+
+
+```
+
 Zach has outscored the median team every single week. His team, though, is under .500. Max and I actually have the same score against the median which is interesting considering he has the best win percentage in the league and I'm on my way to a second signing of the duct tape trophy. 
 
 
@@ -549,7 +570,7 @@ datatable(mu_dt,
           extensions = 'Buttons', 
           options = list(dom = 'lBfrtip', 
                          buttons = list('excel', "csv"),
-                         pageLength = 10, autoWidth = TRUE))
+                         pageLength = 14, autoWidth = TRUE))
 
 
 ```
@@ -745,7 +766,7 @@ datatable(trans_view0 %>% filter(Type != "Trade"),
           extensions = 'Buttons', 
           options = list(dom = 'lBfrtip', 
                          buttons = list('excel', "csv"),
-                         pageLength = 10, autoWidth = TRUE))
+                         pageLength = 14, autoWidth = TRUE))
 
 
 

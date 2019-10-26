@@ -49,10 +49,10 @@ lg_rules <- s19_info$lg_rules
 #### Combining Data ####========================================================
 
 # pull matchup and stat information
-mu_out <- F_get_weekly_matchup(season = 2019, week = 1:6)
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:7)
 mu_view0 <- mu_out$mu_view0
 
-stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:6)
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:7)
 stat_sum0 <- stat_out$player_stats_sum0
 stat_melt0 <- stat_out$stats_melt1
 
@@ -104,6 +104,11 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 ### Week 6 - October 20, 2019
 
 * Data available through the sixth week of the season
+
+### Week 7 - October 24, 2019
+
+* Data available through the seventh week of the season
+* Expanded Round Robin Analysis to look at winning percentage against median and Pythagorean estimates
 
 ## Winners and Losers
 
@@ -194,8 +199,6 @@ ggplot(data = owner_wl0, aes(x = Owner, y = records, fill = Outcome)) +
   guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
 
 ```
-
-Half of the league is at .500 at this point. Eight teams make the playoffs so things are really up for grabs still. Except for probably Nate and Joe. And, me, probably. Pat's injury has me pretty pessimistic about the rest of the season. 
 
 We are getting further along in the season so we can probably start to make some graphs that show trends. We'll just start with points for and points against along with the win/loss outcome. 
 
@@ -323,6 +326,8 @@ ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
   
 ```
 
+Now that Joe has earned (?) himself a cheap win, I wonder if he'll be as tough on Max this week. 
+
 ## Round Robin Analysis 
 
 The prior graph shows weekly performance against the median and average. This brings up a question about how each owner performs against all other owners each week-not just how they do against the person they are playing. We can create a graph that will show for each week how many teams each owner *would have beat* if we had to play every other owner every week. This view is a handy way to find owners who are consistently benefiting/suffering from favorable/unfavorable matchups. Each "row" is a week. Colors are added to show the win/loss outcome, and the number of round robin wins is indicated with black text. 
@@ -361,7 +366,162 @@ ggplot(data = rr_view0,
 
 ```
 
-Zach continues his reign as the scoring champion. Hopefully he's put his early season bad luck matchup behind and he can keep turning his high point totals into wins, I can't help but feel like Charlie and I are in the process of trading places. Two weeks ago, Joe ended Nate's run of worst point totals in a row. Now Joe holds a two-week run of his own. We'll see how long he can keep this up. 
+Joe was able to end his streak of of worst performance of the week at only two weeks. I am holding that title now. I cannot believe Zach has a sub .500 record right now. Too bad he didn't play Max. Or Joe. Or Sam. 
+
+```{r}
+
+# pull data from prior seasons
+# Need some league info first
+s17_info <- F_get_lg_info(user_id = user_id, season = 2017)
+s18_info <- F_get_lg_info(user_id = user_id, season = 2018)
+
+# unload some information from this
+lg_id_17 <- s17_info$lg_id
+lg_id_18 <- s18_info$lg_id
+# mu info
+
+mu_17_out <- F_get_weekly_matchup(season = 2017, week = 1:16, .lg_id = lg_id_17)
+mu_18_out <- F_get_weekly_matchup(season = 2018, week = 1:16, .lg_id = lg_id_18)
+
+mu_17_view0 <- mu_17_out$mu_view0 %>%
+  mutate(season = "2017")
+
+mu_18_view0 <- mu_18_out$mu_view0 %>%
+  mutate(season = "2018")
+
+# Get only the topline numbers; join on to get MOV
+mu_17_sum0 <- mu_17_view0 %>%
+  filter(!is.na(matchup_id), starter == TRUE) %>%
+  select(-player_id, -starter) %>%
+  distinct()
+
+mu_17_sum1 <- mu_17_sum0 %>%
+  left_join(mu_17_sum0, by = c("matchup_id", "week", "season")) %>%
+  filter(roster_id.x != roster_id.y)
+
+# Get points for/against and winning percentage 
+pythag_17 <- mu_17_sum1 %>%
+  group_by(roster_id.x) %>%
+  summarise(
+    points_for = sum(points.x),
+    points_against = sum(points.y),
+    wins = sum(points.x > points.y),
+    losses = sum(points.y > points.x),
+    win_p = wins / n()
+  ) %>% 
+  ungroup() %>% 
+  mutate(season = "2017")
+
+mu_18_sum0 <- mu_18_view0 %>%
+  filter(!is.na(matchup_id), starter == TRUE) %>%
+  select(-player_id, -starter) %>%
+  distinct()
+
+mu_18_sum1 <- mu_18_sum0 %>%
+  left_join(mu_18_sum0, by = c("matchup_id", "week", "season")) %>%
+  filter(roster_id.x != roster_id.y)
+
+pythag_18 <- mu_18_sum1 %>% 
+  group_by(roster_id.x) %>% 
+  summarise(
+    points_for = sum(points.x),
+    points_against = sum(points.y),
+    wins = sum(points.x > points.y),
+    losses = sum(points.y > points.x),
+    win_p = wins / n()
+  ) %>% 
+  ungroup() %>% 
+  mutate(season = "2018")
+  
+mu_19_sum0 <- mu_view0 %>%
+  filter(!is.na(matchup_id), starter == TRUE) %>%
+  select(-player_id, -starter) %>%
+  distinct()
+
+mu_19_sum1 <- mu_19_sum0 %>%
+  left_join(mu_19_sum0, by = c("matchup_id", "week")) %>%
+  filter(roster_id.x != roster_id.y)
+
+
+pythag_19 <- mu_19_sum1 %>% 
+  group_by(roster_id.x) %>% 
+  summarise(
+    points_for = sum(points.x),
+    points_against = sum(points.y),
+    wins = sum(points.x > points.y),
+    losses = sum(points.y > points.x),
+    win_p = wins / n()
+  ) %>% 
+  ungroup() %>% 
+  mutate(season = "2019")
+
+
+# combine all of these together; add columns for logs
+pythag_sum0 <- pythag_17 %>% 
+  bind_rows(pythag_18) %>% 
+  bind_rows(pythag_19) %>% 
+  mutate(log_wl = log(wins / losses), 
+         log_pts = log(points_for / points_against))
+
+lm_pythag <- lm(log_wl ~ log_pts + 0, data = pythag_sum0)
+
+tlst_coef <- round(coefficients(lm_pythag), 3)
+
+```
+
+### Alternative Winning Percentages {.tabset}
+
+I am mostly in this whole thing for the draft parties and the data, but if I were someone who was interested in the best team winning, I feel like this graph would drive me to want the league to consider performance against the median in addition to the head-to-head scores. One thing we can do is determine what everyone's performance would have been a few different ways:
+
+* Actual winning percentage
+* Winning percentage against the median for the week
+* Pythagorean estimate winning percentage with standard exponent of 2.37
+* Pythagorean estimate winning percentage with TLST:TS exponent `r tlst_coef` (Note, this coefficient will update each week as we gather new data to improve the estimate.)
+
+Only the actual winning percentage matters, of course. But I think reviewing these "alternative winning percentages" are instructive to see how well the actual winning percentage does at finding the best team in the leage. 
+
+
+#### Graph of Alternative Winning Percentage
+
+```{r}
+
+
+weekly_owner_scores2 <- weekly_owner_scores1 %>% 
+  filter(starter == "TRUE") %>% 
+  group_by(Owner) %>% 
+  summarise(`Winning %` = round(sum(Outcome == "Win") / n(), 3),
+            `Median %` = round(sum(`Points For` >= `Week Median`) / n(), 3), 
+            `NFL Pythag` = round(sum(`Points For`)^2.37 / (sum(`Points For`) ^ 2.37 + sum(`Points Against`)^2.37), 3), 
+            `TLST Pythag` = round(sum(`Points For`) ^ tlst_coef / (sum(`Points For`) ^ tlst_coef + sum(`Points Against`) ^ tlst_coef), 3))
+
+
+# melt this down
+weekly_gather0 <- weekly_owner_scores2 %>% 
+  gather(key, value, -Owner) %>% 
+  rename(`Winning % Name` = key, 
+         `Winning %` = value) 
+
+ggplot(data = weekly_gather0, aes(x = Owner, y = `Winning %`, 
+                                  colour = `Winning % Name`, shape = `Winning % Name`)) + 
+  # geom_segment(aes(xend = Owner, yend = 0)) +
+  geom_point(size = 5, alpha = 0.7) +
+  # geom_col(stat = "identity", position = "dodge", colour = "black") + 
+  coord_flip() +
+  scale_colour_brewer(palette = "Set1") +
+  scale_y_continuous(label = percent) +
+  scale_shape_manual(values = c(15, 16, 17, 18)) + 
+  ggtitle("TLST: TS - 2019 Season Winning Percentages")  +
+    labs(caption = "Data pulled through Sleeper API https://docs.sleeper.app/") +
+  coord_flip() + 
+  theme_fivethirtyeight() + 
+  theme(legend.title = element_blank()) +
+  guides(fill = guide_legend(nrow = 1, keyheight = 0.5))
+
+```
+
+Zach has outscored the median team every single week. His team, though, is under .500. Max and I actually have the same score against the median which is interesting considering he has the best win percentage in the league and I'm on my way to a second signing of the duct tape trophy. 
+
+
 
 ## Position Performance
 
@@ -477,7 +637,7 @@ Here is a summary of the transaction count by owner.
 
 ```{r}
 
-trans_res <- lapply(1:6, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
+trans_res <- lapply(1:7, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
                            lg_id, 
                            "/transactions/", m))) 
 

@@ -49,10 +49,10 @@ lg_rules <- s19_info$lg_rules
 #### Combining Data ####========================================================
 
 # pull matchup and stat information
-mu_out <- F_get_weekly_matchup(season = 2019, week = 1:7)
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:9)
 mu_view0 <- mu_out$mu_view0
 
-stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:7)
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:9)
 stat_sum0 <- stat_out$player_stats_sum0
 stat_melt0 <- stat_out$stats_melt1
 
@@ -109,6 +109,15 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 
 * Data available through the seventh week of the season
 * Expanded Round Robin Analysis to look at winning percentage against median and Pythagorean estimates
+
+### Week 8 - Uhh...Whoops
+
+* No update this week
+* Expanded Round Robin Analysis to look at winning percentage against median and Pythagorean estimates
+
+### Week 9 - November 6, 2019
+
+* Data updated through the ninth week of the season
 
 ## Winners and Losers
 
@@ -326,8 +335,6 @@ ggplot(data = weekly_owner_scores1 %>% filter(starter == TRUE),
   
 ```
 
-Now that Joe has earned (?) himself a cheap win, I wonder if he'll be as tough on Max this week. 
-
 ## Round Robin Analysis 
 
 The prior graph shows weekly performance against the median and average. This brings up a question about how each owner performs against all other owners each week-not just how they do against the person they are playing. We can create a graph that will show for each week how many teams each owner *would have beat* if we had to play every other owner every week. This view is a handy way to find owners who are consistently benefiting/suffering from favorable/unfavorable matchups. Each "row" is a week. Colors are added to show the win/loss outcome, and the number of round robin wins is indicated with black text. 
@@ -366,7 +373,7 @@ ggplot(data = rr_view0,
 
 ```
 
-Joe was able to end his streak of of worst performance of the week at only two weeks. I am holding that title now. I cannot believe Zach has a sub .500 record right now. Too bad he didn't play Max. Or Joe. Or Sam. 
+Commish is looking strong. 
 
 ```{r}
 
@@ -540,9 +547,6 @@ datatable(weekly_owner_scores2 %>% arrange(desc(`Median %`)),
 
 ```
 
-Zach has outscored the median team every single week. His team, though, is under .500. Max and I actually have the same score against the median which is interesting considering he has the best win percentage in the league and I'm on my way to a second signing of the duct tape trophy. 
-
-
 
 ## Position Performance
 
@@ -658,7 +662,7 @@ Here is a summary of the transaction count by owner.
 
 ```{r}
 
-trans_res <- lapply(1:7, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
+trans_res <- lapply(1:9, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
                            lg_id, 
                            "/transactions/", m))) 
 

@@ -113,7 +113,6 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 ### Week 8 - Uhh...Whoops
 
 * No update this week
-* Expanded Round Robin Analysis to look at winning percentage against median and Pythagorean estimates
 
 ### Week 9 - November 6, 2019
 

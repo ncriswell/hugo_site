@@ -49,10 +49,10 @@ lg_rules <- s19_info$lg_rules
 #### Combining Data ####========================================================
 
 # pull matchup and stat information
-mu_out <- F_get_weekly_matchup(season = 2019, week = 1:9)
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:13)
 mu_view0 <- mu_out$mu_view0
 
-stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:9)
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:13)
 stat_sum0 <- stat_out$player_stats_sum0
 stat_melt0 <- stat_out$stats_melt1
 
@@ -118,6 +118,12 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 
 * Data updated through the ninth week of the season
 
+### No Updates between Weeks 10 and 12
+
+### Week 13 - December 7, 2019
+
+* Data Updated through the 13th week of the season
+
 ## Winners and Losers
 
 To orient ourselves, we'll start with a simple view of the win-loss record for all owners in the league. 
@@ -132,7 +138,7 @@ weekly_owner_scores0 <- mu_view3 %>%
 weekly_owner_scores1 <- weekly_owner_scores0 %>% 
   left_join(weekly_owner_scores0, by = c("week", "matchup_id", "starter")) %>% 
   filter(display_name.x != display_name.y) %>% 
-  mutate(Week = as.factor(week),
+  mutate(Week = as.factor(as.numeric(week)),
          display_name.x = as.factor(display_name.x)) %>% 
   select(Week, display_name.x, tot_points.x, tot_points.y, starter, matchup_id) %>% 
   rename(`Owner` = display_name.x, 
@@ -372,8 +378,6 @@ ggplot(data = rr_view0,
 
 ```
 
-Commish is looking strong. 
-
 ```{r}
 
 # pull data from prior seasons
@@ -592,7 +596,7 @@ weekly_owner_position0 <- mu_view3 %>%
   group_by(week, display_name, starter, matchup_id, position) %>% 
   summarise(position_points = sum(player_score, na.rm = TRUE)) %>% 
   ungroup() %>% 
-  mutate(Week = as.factor(week), 
+  mutate(Week = as.factor(as.numeric(week)), 
          display_name = as.factor(display_name)) %>% 
   rename(Owner = display_name,
          `Points For` = position_points) %>% 
@@ -661,7 +665,7 @@ Here is a summary of the transaction count by owner.
 
 ```{r}
 
-trans_res <- lapply(1:9, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
+trans_res <- lapply(1:13, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
                            lg_id, 
                            "/transactions/", m))) 
 
@@ -722,7 +726,8 @@ trans_view0 <- trans_ref_view0 %>%
          `Dropped Position` = position) %>% 
   select(-add_player_id, -drop_player_id, -user_id, -roster_ids) %>% 
   mutate(type = str_to_title(type), 
-         status = str_to_title(status)) %>% 
+         status = str_to_title(status),
+         week = as.factor(as.numeric(week))) %>% 
     mutate_all(as.factor) %>%
   rename(Owner = display_name, 
          Week = week, 

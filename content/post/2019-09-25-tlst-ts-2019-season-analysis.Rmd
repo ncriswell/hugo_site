@@ -49,10 +49,10 @@ lg_rules <- s19_info$lg_rules
 #### Combining Data ####========================================================
 
 # pull matchup and stat information
-mu_out <- F_get_weekly_matchup(season = 2019, week = 1:13)
+mu_out <- F_get_weekly_matchup(season = 2019, week = 1:15)
 mu_view0 <- mu_out$mu_view0
 
-stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:13)
+stat_out <- F_get_weekly_player_stats(season = 2019, week = 1:15)
 stat_sum0 <- stat_out$player_stats_sum0
 stat_melt0 <- stat_out$stats_melt1
 
@@ -123,6 +123,12 @@ I don't really want a ton of posts on this site just to accommodate an analysis 
 ### Week 13 - December 7, 2019
 
 * Data Updated through the 13th week of the season
+
+### Got a little lost here on the dates and weeks...
+
+### Week 15 - December 22, 2019
+
+* Data Updated through the 15th week of the season
 
 ## Winners and Losers
 
@@ -665,7 +671,7 @@ Here is a summary of the transaction count by owner.
 
 ```{r}
 
-trans_res <- lapply(1:13, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
+trans_res <- lapply(1:15, function(m) fromJSON(glue("https://api.sleeper.app/v1/league/", 
                            lg_id, 
                            "/transactions/", m))) 
 
